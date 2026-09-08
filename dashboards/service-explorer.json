@@ -1,0 +1,409 @@
+{
+  "id": null,
+  "panels": [
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0.99
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "sum(kube_endpoint_address_available{namespace=\"$namespace\",endpoint=\"$service\"}) or vector(0)",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Ready Endpoints",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.99
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 8,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "sum(kube_endpoint_address_not_ready{namespace=\"$namespace\",endpoint=\"$service\"}) or vector(0)",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Not-Ready Endpoints",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "time() - kube_service_created{namespace=\"$namespace\",service=\"$service\"}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Service Age",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      },
+      "id": 4,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "kube_service_info{namespace=\"$namespace\",service=\"$service\"}",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Service Info (type, cluster_ip, external_name)",
+      "type": "table"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "id": 5,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "kube_service_spec_type{namespace=\"$namespace\",service=\"$service\"}",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Service Spec Type",
+      "type": "table"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "id": 6,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "kube_endpoint_ports{namespace=\"$namespace\",endpoint=\"$service\"}",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Endpoint Ports",
+      "type": "table"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "sum(kube_endpoint_address_available{namespace=\"$namespace\",endpoint=\"$service\"})",
+          "legendFormat": "ready",
+          "refId": "A"
+        },
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "sum(kube_endpoint_address_not_ready{namespace=\"$namespace\",endpoint=\"$service\"})",
+          "legendFormat": "not ready",
+          "refId": "B"
+        }
+      ],
+      "title": "Ready vs Not-Ready Endpoints Over Time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "${DS_LOKI}",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "id": 8,
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessages": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_LOKI}",
+          "expr": "{job=\"k8s-events\"} | json | involvedObject_namespace=\"$namespace\" | involvedObject_name=\"$service\"",
+          "refId": "A"
+        }
+      ],
+      "title": "Service-related Kubernetes Events",
+      "type": "logs"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "kubernetes",
+    "service",
+    "drilldown"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "${DS_PROMETHEUS}",
+        "hide": 0,
+        "includeAll": true,
+        "multi": false,
+        "name": "cluster",
+        "options": [],
+        "query": "label_values(up, cluster)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
+        "includeAll": false,
+        "label": "namespace",
+        "multi": false,
+        "name": "namespace",
+        "options": [],
+        "query": "label_values(kube_service_info, namespace)",
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
+        "includeAll": false,
+        "label": "service",
+        "multi": false,
+        "name": "service",
+        "options": [],
+        "query": "label_values(kube_service_info{namespace=\"$namespace\"}, service)",
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Service Explorer",
+  "uid": "k8s-service-explorer",
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus"
+    },
+    {
+      "name": "DS_LOKI",
+      "label": "Loki",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "loki"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "loki",
+      "name": "Loki",
+      "version": "1.0.0"
+    }
+  ]
+}

@@ -1,0 +1,327 @@
+{
+  "id": null,
+  "panels": [
+    {
+      "datasource": "${DS_LOKI}",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessages": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_LOKI}",
+          "expr": "{job=\"kubernetes-containers\"}",
+          "refId": "A"
+        }
+      ],
+      "title": "All Kubernetes Container Logs (live tail)",
+      "type": "logs"
+    },
+    {
+      "datasource": "${DS_LOKI}",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 10
+      },
+      "id": 2,
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessages": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_LOKI}",
+          "expr": "{job=\"kubernetes-containers\"} |~ \"(?i)error|panic|fatal|crash\"",
+          "refId": "A"
+        }
+      ],
+      "title": "Errors Across All Containers",
+      "type": "logs"
+    },
+    {
+      "datasource": "${DS_LOKI}",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
+      "id": 3,
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessages": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_LOKI}",
+          "expr": "{job=\"kubernetes-containers\", namespace=\"kube-system\"}",
+          "refId": "A"
+        }
+      ],
+      "title": "kube-system Namespace Logs",
+      "type": "logs"
+    },
+    {
+      "datasource": "${DS_LOKI}",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 30
+      },
+      "id": 4,
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessages": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_LOKI}",
+          "expr": "{job=\"syslog\"}",
+          "refId": "A"
+        }
+      ],
+      "title": "Host Syslog (kubelet/containerd/systemd) - all nodes",
+      "type": "logs"
+    },
+    {
+      "datasource": "${DS_LOKI}",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 40
+      },
+      "id": 5,
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessages": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_LOKI}",
+          "expr": "{job=\"k8s-events\"}",
+          "refId": "A"
+        }
+      ],
+      "title": "All Kubernetes Events (live)",
+      "type": "logs"
+    },
+    {
+      "datasource": "${DS_LOKI}",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 50
+      },
+      "id": 6,
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessages": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_LOKI}",
+          "expr": "{job=\"k8s-events\"} | json | type=\"Warning\"",
+          "refId": "A"
+        }
+      ],
+      "title": "Warning Events Only",
+      "type": "logs"
+    },
+    {
+      "datasource": "${DS_LOKI}",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 60
+      },
+      "id": 7,
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessages": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_LOKI}",
+          "expr": "{job=\"k8s-events\"} | json | reason=\"FailedScheduling\"",
+          "refId": "A"
+        }
+      ],
+      "title": "Scheduling Failures (NodeSelector/Taints/Affinity/Resources)",
+      "type": "logs"
+    },
+    {
+      "datasource": "${DS_LOKI}",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 70
+      },
+      "id": 8,
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessages": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_LOKI}",
+          "expr": "{job=\"k8s-events\"} | json | reason=~\"FailedMount|FailedAttachVolume|VolumeFailedDelete\"",
+          "refId": "A"
+        }
+      ],
+      "title": "Volume Errors (Mount/Attach/Multi-Attach)",
+      "type": "logs"
+    },
+    {
+      "datasource": "${DS_LOKI}",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 80
+      },
+      "id": 9,
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessages": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_LOKI}",
+          "expr": "{job=\"k8s-events\"} | json | message=~\"(?i)serviceaccount|forbidden|unauthorized\"",
+          "refId": "A"
+        }
+      ],
+      "title": "ServiceAccount / RBAC Admission Issues",
+      "type": "logs"
+    },
+    {
+      "datasource": "${DS_LOKI}",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 90
+      },
+      "id": 10,
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessages": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_LOKI}",
+          "expr": "{job=\"k8s-events\"} | json | message=~\"(?i)limitrange|resourcequota|exceeded quota\"",
+          "refId": "A"
+        }
+      ],
+      "title": "LimitRange / ResourceQuota Admission Rejections",
+      "type": "logs"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "kubernetes",
+    "logs",
+    "loki"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "${DS_PROMETHEUS}",
+        "hide": 0,
+        "includeAll": true,
+        "multi": false,
+        "name": "cluster",
+        "options": [],
+        "query": "label_values(up, cluster)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Cluster Logs (Loki)",
+  "uid": "k8s-cluster-logs",
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus"
+    },
+    {
+      "name": "DS_LOKI",
+      "label": "Loki",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "loki"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "loki",
+      "name": "Loki",
+      "version": "1.0.0"
+    }
+  ]
+}

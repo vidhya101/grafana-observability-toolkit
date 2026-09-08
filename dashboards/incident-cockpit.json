@@ -1,0 +1,1856 @@
+{
+  "id": null,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "title": "\ud83d\udd0d Selected Scenario (pick from the dropdown above)",
+      "type": "row"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 2,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "${scenario}",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Result: ${scenario:text}",
+      "type": "table"
+    },
+    {
+      "datasource": "${DS_LOKI}",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "id": 3,
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessages": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_LOKI}",
+          "expr": "${log_scenario}",
+          "refId": "A"
+        }
+      ],
+      "title": "Logs: ${log_scenario:text}",
+      "type": "logs"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 4,
+      "title": "\ud83d\udda5\ufe0f Server Vitals \u2014 $node",
+      "type": "row"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 18
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{cluster=~\"$cluster\",mode=\"idle\",instance=~\"$node\"}[5m])) * 100)",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "CPU Usage %",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 18
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "100 * (1 - (node_memory_MemAvailable_bytes{cluster=~\"$cluster\",instance=~\"$node\"} / node_memory_MemTotal_bytes{cluster=~\"$cluster\",instance=~\"$node\"}))",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Memory Usage %",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 4
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 18
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "node_load1{cluster=~\"$cluster\",instance=~\"$node\"}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Load Average (1m)",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 18
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "node_users_logged_in{cluster=~\"$cluster\",instance=~\"$node\"}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Active User Sessions",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 18
+      },
+      "id": 9,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "100 - ((node_filesystem_avail_bytes{cluster=~\"$cluster\",instance=~\"$node\",mountpoint=\"/\"} * 100) / node_filesystem_size_bytes{cluster=~\"$cluster\",instance=~\"$node\",mountpoint=\"/\"})",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Disk Usage % (root)",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 18
+      },
+      "id": 10,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "node_process_count_total{cluster=~\"$cluster\",instance=~\"$node\"}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total Processes",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 22
+      },
+      "id": 11,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "topk(8, sum by (groupname,instance) (rate(namedprocess_namegroup_cpu_seconds_total{cluster=~\"$cluster\",instance=~\"$node\"}[5m])))",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Top 8 Processes by CPU",
+      "type": "table"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 22
+      },
+      "id": 12,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "topk(8, sum by (groupname,instance) (namedprocess_namegroup_memory_bytes{cluster=~\"$cluster\",instance=~\"$node\",memtype=\"resident\"}))",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Top 8 Processes by Memory",
+      "type": "table"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10
+          },
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 30
+      },
+      "id": 13,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "rate(node_network_receive_bytes_total{cluster=~\"$cluster\",instance=~\"$node\",device!~\"lo|veth.*|docker.*|cali.*\"}[5m])",
+          "legendFormat": "{{instance}} rx",
+          "refId": "A"
+        },
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "rate(node_network_transmit_bytes_total{cluster=~\"$cluster\",instance=~\"$node\",device!~\"lo|veth.*|docker.*|cali.*\"}[5m])",
+          "legendFormat": "{{instance}} tx",
+          "refId": "B"
+        }
+      ],
+      "title": "Network I/O",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 30
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{cluster=~\"$cluster\",mode=\"idle\",instance=~\"$node\"}[5m])) * 100)",
+          "legendFormat": "{{instance}} CPU %",
+          "refId": "A"
+        },
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "100 * (1 - (node_memory_MemAvailable_bytes{cluster=~\"$cluster\",instance=~\"$node\"} / node_memory_MemTotal_bytes{cluster=~\"$cluster\",instance=~\"$node\"}))",
+          "legendFormat": "{{instance}} Mem %",
+          "refId": "B"
+        }
+      ],
+      "title": "CPU + Memory Trend",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 38
+      },
+      "id": 15,
+      "title": "\ud83d\udce6 Kubernetes Object Counts (cluster-wide)",
+      "type": "row"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 39
+      },
+      "id": 16,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "count(kube_pod_info{cluster=~\"$cluster\"})",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Pods",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 39
+      },
+      "id": 17,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "count(kube_deployment_created{cluster=~\"$cluster\"})",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Deployments",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 39
+      },
+      "id": 18,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "count(kube_node_info{cluster=~\"$cluster\"})",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Nodes",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 39
+      },
+      "id": 19,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "count(kube_service_info{cluster=~\"$cluster\"})",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Services",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 39
+      },
+      "id": 20,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "count(kube_namespace_created{cluster=~\"$cluster\"})",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Namespaces",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 39
+      },
+      "id": 21,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "count(kube_persistentvolumeclaim_info{cluster=~\"$cluster\"})",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "PVCs",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 43
+      },
+      "id": 22,
+      "title": "\ud83d\udea6 RED Signals \u2014 Rate / Errors / Duration (ingress-nginx, live)",
+      "type": "row"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 0,
+        "y": 44
+      },
+      "id": 23,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "sum(rate(nginx_ingress_controller_requests{cluster=~\"$cluster\"}[5m])) or vector(0)",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Request Rate",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 8,
+        "y": 44
+      },
+      "id": 24,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "sum(rate(nginx_ingress_controller_requests{cluster=~\"$cluster\",status=~\"5..\"}[5m])) / sum(rate(nginx_ingress_controller_requests{cluster=~\"$cluster\"}[5m])) * 100 or vector(0)",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Error Rate % (5xx)",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0.99
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 44
+      },
+      "id": 25,
+      "options": {
+        "colorMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "up{cluster=~\"$cluster\",job=\"ingress-nginx\"}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Ingress Controller Up",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 48
+      },
+      "id": 26,
+      "title": "\u2699\ufe0f USE Signals \u2014 Utilization / Saturation / Errors, per node",
+      "type": "row"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 0,
+        "y": 49
+      },
+      "id": 27,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{cluster=~\"$cluster\",mode=\"idle\",instance=~\"$node\"}[5m])) * 100)",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Utilization: CPU %",
+      "type": "table"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 8,
+        "y": 49
+      },
+      "id": 28,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "100 * (1 - (node_memory_MemAvailable_bytes{cluster=~\"$cluster\",instance=~\"$node\"} / node_memory_MemTotal_bytes{cluster=~\"$cluster\",instance=~\"$node\"}))",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Utilization: Memory %",
+      "type": "table"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 16,
+        "y": 49
+      },
+      "id": 29,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "100 - ((node_filesystem_avail_bytes{cluster=~\"$cluster\",instance=~\"$node\",mountpoint=\"/\"} * 100) / node_filesystem_size_bytes{cluster=~\"$cluster\",instance=~\"$node\",mountpoint=\"/\"})",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Utilization: Disk %",
+      "type": "table"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 55
+      },
+      "id": 30,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "node_load1{cluster=~\"$cluster\",instance=~\"$node\"} / on(instance) count(node_cpu_seconds_total{cluster=~\"$cluster\",mode=\"system\",instance=~\"$node\"}) by (instance)",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Saturation: Load per core",
+      "type": "table"
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 55
+      },
+      "id": 31,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "expr": "sum by (instance) (rate(container_cpu_cfs_throttled_seconds_total{cluster=~\"$cluster\",container!=\"\",container!=\"POD\"}[5m]))",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Errors: CPU throttling events (containers)",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 61
+      },
+      "id": 32,
+      "title": "\ud83d\udcdc Live Logs \u2014 filtered by $log_severity",
+      "type": "row"
+    },
+    {
+      "datasource": "${DS_LOKI}",
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 62
+      },
+      "id": 33,
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessages": true
+      },
+      "targets": [
+        {
+          "datasource": "${DS_LOKI}",
+          "expr": "{job=~\"kubernetes-containers|k8s-events|syslog\"} |~ \"$log_severity\"",
+          "refId": "A"
+        }
+      ],
+      "title": "Live Logs (all sources)",
+      "type": "logs"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "incident",
+    "cockpit",
+    "sre"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "\ud83d\udd34 [Pod] CrashLoopBackOff",
+          "value": "kube_pod_container_status_waiting_reason{reason=\"CrashLoopBackOff\"} == 1"
+        },
+        "includeAll": false,
+        "label": "Scenario (PromQL)",
+        "multi": false,
+        "name": "scenario",
+        "options": [
+          {
+            "selected": true,
+            "text": "\ud83d\udd34 [Pod] CrashLoopBackOff",
+            "value": "kube_pod_container_status_waiting_reason{reason=\"CrashLoopBackOff\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Pod] Restart rate",
+            "value": "increase(kube_pod_container_status_restarts_total[15m]) > 3"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Pod] ImagePullBackOff",
+            "value": "kube_pod_container_status_waiting_reason{reason=\"ImagePullBackOff\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Pod] ErrImagePull",
+            "value": "kube_pod_container_status_waiting_reason{reason=\"ErrImagePull\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Pod] CreateContainerConfigError",
+            "value": "kube_pod_container_status_waiting_reason{reason=\"CreateContainerConfigError\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Pod] CreateContainerError",
+            "value": "kube_pod_container_status_waiting_reason{reason=\"CreateContainerError\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Pod] OOMKilled",
+            "value": "kube_pod_container_status_last_terminated_reason{reason=\"OOMKilled\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Pod] OOM leading indicator",
+            "value": "container_memory_working_set_bytes / on(pod,namespace,container) kube_pod_container_resource_limits{resource=\"memory\"} > 0.9"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Pod] Unexpected exit (Error)",
+            "value": "kube_pod_container_status_last_terminated_reason{reason=\"Error\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Pod] Completed (unexpected)",
+            "value": "kube_pod_status_phase{phase=\"Succeeded\"} == 1 and on(pod,namespace) kube_pod_owner{owner_kind=\"ReplicaSet\"}"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Pod] ContainerCannotRun",
+            "value": "kube_pod_container_status_waiting_reason{reason=\"ContainerCannotRun\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Pod] InvalidImageName",
+            "value": "kube_pod_container_status_waiting_reason{reason=\"InvalidImageName\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Scheduling] Pending forever",
+            "value": "(time() - kube_pod_created) > 300 and on(pod,namespace) kube_pod_status_phase{phase=\"Pending\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Scheduling] Insufficient CPU (cluster)",
+            "value": "sum(kube_node_status_allocatable{resource=\"cpu\"}) - sum(kube_pod_container_resource_requests{resource=\"cpu\"})"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Scheduling] Insufficient Memory (cluster)",
+            "value": "sum(kube_node_status_allocatable{resource=\"memory\"}) - sum(kube_pod_container_resource_requests{resource=\"memory\"})"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Scheduling] PVC not bound",
+            "value": "kube_persistentvolumeclaim_status_phase{phase=\"Pending\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Scheduling] Too many pods per node",
+            "value": "count(kube_pod_info) by (node) / on(node) kube_node_status_capacity{resource=\"pods\"} > 0.9"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Scheduling] ResourceQuota exceeded",
+            "value": "kube_resourcequota{type=\"used\"} / on(namespace,resource) kube_resourcequota{type=\"hard\"} > 0.9"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Networking] Service has no endpoints",
+            "value": "count(kube_endpoint_address_available) by (endpoint,namespace) == 0"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Networking] DNS resolution failing",
+            "value": "rate(coredns_dns_responses_total{rcode=\"SERVFAIL\"}[5m]) > 0"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Networking] CoreDNS crashing",
+            "value": "rate(coredns_panics_total[5m]) > 0"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Networking] Calico CNI agent down",
+            "value": "up{job=\"calico-node\"} == 0"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Networking] Calico dataplane failures",
+            "value": "sum by (instance) (increase(felix_int_dataplane_failures[10m])) > 0"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Networking] Calico iptables errors",
+            "value": "sum(increase(felix_iptables_restore_errors[5m])) > 0"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Networking] LoadBalancer pending / no external IP",
+            "value": "kube_service_spec_type{type=\"LoadBalancer\"}"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Ingress] Ingress 404s",
+            "value": "sum(rate(nginx_ingress_controller_requests{status=\"404\"}[5m])) by (ingress)"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Ingress] Ingress 502s",
+            "value": "sum(rate(nginx_ingress_controller_requests{status=\"502\"}[5m])) by (ingress)"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Ingress] Ingress 503s",
+            "value": "sum(rate(nginx_ingress_controller_requests{status=\"503\"}[5m])) by (ingress)"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Storage] PVC Pending",
+            "value": "kube_persistentvolumeclaim_status_phase{phase=\"Pending\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Storage] PV Released",
+            "value": "kube_persistentvolume_status_phase{phase=\"Released\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Storage] No default StorageClass",
+            "value": "count(kube_storageclass_info{is_default_class=\"true\"}) == 0"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Deployment] Rollout stuck",
+            "value": "kube_deployment_status_replicas_updated != kube_deployment_spec_replicas"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Deployment] ReplicaSet not scaling",
+            "value": "kube_replicaset_status_replicas != kube_replicaset_spec_replicas"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Deployment] Deployment unavailable",
+            "value": "kube_deployment_status_replicas_unavailable > 0"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Deployment] ProgressDeadlineExceeded",
+            "value": "kube_deployment_status_condition{condition=\"Progressing\", status=\"false\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Deployment] HPA not scaling",
+            "value": "kube_horizontalpodautoscaler_status_condition{condition=\"ScalingActive\", status=\"false\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Deployment] HPA unknown metrics",
+            "value": "kube_horizontalpodautoscaler_status_condition{condition=\"AbleToScale\", status=\"unknown\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Security] Forbidden (RBAC 403)",
+            "value": "sum(rate(apiserver_request_total{code=\"403\"}[5m])) by (user,resource)"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Security] Unauthorized (401)",
+            "value": "sum(rate(apiserver_request_total{code=\"401\"}[5m]))"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Security] Secret not found",
+            "value": "kube_pod_container_status_waiting_reason{reason=\"CreateContainerConfigError\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Security] Certificate expiring",
+            "value": "(certmanager_certificate_expiration_timestamp_seconds - time()) / 86400 < 14"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Node] Node NotReady",
+            "value": "kube_node_status_condition{condition=\"Ready\", status=\"true\"} == 0"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Node] Disk pressure",
+            "value": "kube_node_status_condition{condition=\"DiskPressure\", status=\"true\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Node] Memory pressure",
+            "value": "kube_node_status_condition{condition=\"MemoryPressure\", status=\"true\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Node] PID pressure",
+            "value": "kube_node_status_condition{condition=\"PIDPressure\", status=\"true\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Node] Network unavailable",
+            "value": "kube_node_status_condition{condition=\"NetworkUnavailable\", status=\"true\"} == 1"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Explorer] Pod: container detail",
+            "value": "kube_pod_container_info{namespace=\"$namespace\",pod=\"$pod\"}"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Explorer] Pod: CPU usage vs request/limit",
+            "value": "sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\",pod=\"$pod\",container!=\"\",container!=\"POD\"}[5m]))"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Explorer] Pod: memory usage vs request/limit",
+            "value": "sum(container_memory_working_set_bytes{namespace=\"$namespace\",pod=\"$pod\",container!=\"\",container!=\"POD\"})"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Explorer] Pod: network I/O",
+            "value": "sum(rate(container_network_receive_bytes_total{namespace=\"$namespace\",pod=\"$pod\"}[5m]))"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Explorer] Deployment \u2192 backing pods",
+            "value": "kube_pod_info{namespace=\"$namespace\"} * on(pod,namespace) group_left() kube_pod_owner{namespace=\"$namespace\",owner_kind=\"ReplicaSet\",owner_name=~\"^$deployment-[a-z0-9]+$\"}"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Explorer] Service \u2192 endpoint readiness",
+            "value": "sum(kube_endpoint_address_available{namespace=\"$namespace\",endpoint=\"$service\"})"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Inventory] DaemonSet not fully ready",
+            "value": "kube_daemonset_status_desired_number_scheduled != on(namespace,daemonset) kube_daemonset_status_number_ready"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Inventory] StatefulSet not fully ready",
+            "value": "kube_statefulset_replicas != on(namespace,statefulset) kube_statefulset_status_replicas_ready"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Inventory] Jobs currently failing",
+            "value": "kube_job_status_failed > 0"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Inventory] PodDisruptionBudget blocking",
+            "value": "kube_poddisruptionbudget_status_pod_disruptions_allowed == 0"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Inventory] NetworkPolicy rule counts",
+            "value": "kube_networkpolicy_spec_ingress_rules"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Inventory] Total object counts (all types)",
+            "value": "count(kube_deployment_created)"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Platform] istiod config sync errors",
+            "value": "sum(pilot_xds_push_errors)"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Platform] Envoy request rate",
+            "value": "sum(rate(envoy_http_downstream_rq_total[5m]))"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Platform] ArgoCD apps out of sync",
+            "value": "count(argocd_app_info{sync_status!=\"Synced\"})"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Platform] ArgoCD apps unhealthy",
+            "value": "count(argocd_app_info{health_status!=\"Healthy\"})"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Platform] Vault sealed",
+            "value": "vault_core_unsealed == bool(0)"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host CPU] CPU usage %",
+            "value": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host CPU] CPU usage by mode",
+            "value": "sum by (instance,mode) (rate(node_cpu_seconds_total[5m]))"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host CPU] Load average (1/5/15m)",
+            "value": "node_load1"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host CPU] Load per core (normalized)",
+            "value": "node_load1 / count(node_cpu_seconds_total{mode=\"system\"}) by (instance)"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host CPU] Context switches/sec",
+            "value": "rate(node_context_switches_total[5m])"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host CPU] Running / blocked processes",
+            "value": "node_procs_running"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host Mem] Memory usage %",
+            "value": "100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host Mem] Memory available (bytes)",
+            "value": "node_memory_MemAvailable_bytes"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Host Mem] Swap in use",
+            "value": "node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host Mem] Entropy available",
+            "value": "node_entropy_available_bits"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host Disk] Disk usage %",
+            "value": "100 - ((node_filesystem_avail_bytes{fstype!~\"tmpfs|overlay\"} * 100) / node_filesystem_size_bytes{fstype!~\"tmpfs|overlay\"})"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host Disk] Inode usage %",
+            "value": "100 - (node_filesystem_files_free / node_filesystem_files * 100)"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host Disk] Disk I/O time (saturation)",
+            "value": "rate(node_disk_io_time_seconds_total[5m])"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host Disk] Disk read/write throughput",
+            "value": "rate(node_disk_read_bytes_total[5m])"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Host Disk] Time until disk fills (forecast)",
+            "value": "predict_linear(node_filesystem_avail_bytes{mountpoint=\"/\"}[1h], 4*3600) < 0"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host Net] Network throughput RX/TX",
+            "value": "rate(node_network_receive_bytes_total[5m])"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Host Net] Network errors",
+            "value": "rate(node_network_receive_errs_total[5m])"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Host Net] Network drops",
+            "value": "rate(node_network_transmit_drop_total[5m])"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Host Misc] Time since last boot",
+            "value": "time() - node_boot_time_seconds"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Host Misc] Clock drift",
+            "value": "node_timex_offset_seconds"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Host Misc] Open file descriptors",
+            "value": "node_filefd_allocated / node_filefd_maximum"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Container] CPU throttling",
+            "value": "rate(container_cpu_cfs_throttled_seconds_total{container!=\"\",container!=\"POD\"}[5m]) > 0"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Container] Top 10 CPU consumers",
+            "value": "topk(10, sum by (pod,namespace) (rate(container_cpu_usage_seconds_total{container!=\"\",container!=\"POD\"}[5m])))"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Container] Top 10 memory consumers",
+            "value": "topk(10, sum by (pod,namespace) (container_memory_working_set_bytes{container!=\"\",container!=\"POD\"}))"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Container] Container-level OOM events",
+            "value": "increase(container_oom_events_total[15m]) > 0"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Container] Container filesystem usage",
+            "value": "container_fs_usage_bytes{container!=\"\",container!=\"POD\"}"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [USE] CPU",
+            "value": "rate(container_cpu_cfs_throttled_seconds_total[5m])"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [USE] Memory",
+            "value": "increase(container_oom_events_total[15m])"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [USE] Disk",
+            "value": "iostat error counters \u2014 not exported by node_exporter by default"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [USE] Network",
+            "value": "rate(node_network_receive_errs_total[5m])"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [FinOps] Requested-but-unused CPU",
+            "value": "sum(kube_pod_container_resource_requests{resource=\"cpu\"}) - sum(rate(container_cpu_usage_seconds_total{container!=\"\",container!=\"POD\"}[5m]))"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [FinOps] Requested-but-unused memory",
+            "value": "sum(kube_pod_container_resource_requests{resource=\"memory\"}) - sum(container_memory_working_set_bytes{container!=\"\",container!=\"POD\"})"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [FinOps] Containers with zero CPU request",
+            "value": "count(kube_pod_container_info) unless on(pod,namespace,container) kube_pod_container_resource_requests{resource=\"cpu\"}"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [FinOps] CPU limit overcommit ratio (per node)",
+            "value": "sum(kube_pod_container_resource_limits{resource=\"cpu\"}) by (node) / on(node) sum(kube_node_status_allocatable{resource=\"cpu\"}) by (node)"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [FinOps] Idle nodes (candidates to scale down)",
+            "value": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[1h])) * 100) < 5"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [MLOps] KServe controller health",
+            "value": "up{job=\"kube-state-metrics\"} and on(pod) kube_pod_info{namespace=\"kserve\"}"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [AIOps] Linear forecast (generic)",
+            "value": "predict_linear(node_filesystem_avail_bytes[1h], 4*3600) < 0"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [AIOps] Metric went missing entirely",
+            "value": "absent(up{job=\"kube-apiserver\"})"
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [AIOps] Flapping detector",
+            "value": "changes(kube_pod_container_status_ready{namespace=\"default\"}[10m]) > 4"
+          }
+        ],
+        "query": "\ud83d\udd34 [Pod] CrashLoopBackOff : kube_pod_container_status_waiting_reason{reason=\"CrashLoopBackOff\"} == 1,\ud83d\udfe1 [Pod] Restart rate : increase(kube_pod_container_status_restarts_total[15m]) > 3,\ud83d\udfe1 [Pod] ImagePullBackOff : kube_pod_container_status_waiting_reason{reason=\"ImagePullBackOff\"} == 1,\ud83d\udfe1 [Pod] ErrImagePull : kube_pod_container_status_waiting_reason{reason=\"ErrImagePull\"} == 1,\ud83d\udd34 [Pod] CreateContainerConfigError : kube_pod_container_status_waiting_reason{reason=\"CreateContainerConfigError\"} == 1,\ud83d\udd34 [Pod] CreateContainerError : kube_pod_container_status_waiting_reason{reason=\"CreateContainerError\"} == 1,\ud83d\udd34 [Pod] OOMKilled : kube_pod_container_status_last_terminated_reason{reason=\"OOMKilled\"} == 1,\ud83d\udfe1 [Pod] OOM leading indicator : container_memory_working_set_bytes / on(pod,namespace,container) kube_pod_container_resource_limits{resource=\"memory\"} > 0.9,\ud83d\udfe1 [Pod] Unexpected exit (Error) : kube_pod_container_status_last_terminated_reason{reason=\"Error\"} == 1,\ud83d\udfe1 [Pod] Completed (unexpected) : kube_pod_status_phase{phase=\"Succeeded\"} == 1 and on(pod,namespace) kube_pod_owner{owner_kind=\"ReplicaSet\"},\ud83d\udd34 [Pod] ContainerCannotRun : kube_pod_container_status_waiting_reason{reason=\"ContainerCannotRun\"} == 1,\ud83d\udd34 [Pod] InvalidImageName : kube_pod_container_status_waiting_reason{reason=\"InvalidImageName\"} == 1,\ud83d\udd34 [Scheduling] Pending forever : (time() - kube_pod_created) > 300 and on(pod,namespace) kube_pod_status_phase{phase=\"Pending\"} == 1,\ud83d\udfe1 [Scheduling] Insufficient CPU (cluster) : sum(kube_node_status_allocatable{resource=\"cpu\"}) - sum(kube_pod_container_resource_requests{resource=\"cpu\"}),\ud83d\udfe1 [Scheduling] Insufficient Memory (cluster) : sum(kube_node_status_allocatable{resource=\"memory\"}) - sum(kube_pod_container_resource_requests{resource=\"memory\"}),\ud83d\udd34 [Scheduling] PVC not bound : kube_persistentvolumeclaim_status_phase{phase=\"Pending\"} == 1,\ud83d\udfe1 [Scheduling] Too many pods per node : count(kube_pod_info) by (node) / on(node) kube_node_status_capacity{resource=\"pods\"} > 0.9,\ud83d\udfe1 [Scheduling] ResourceQuota exceeded : kube_resourcequota{type=\"used\"} / on(namespace,resource) kube_resourcequota{type=\"hard\"} > 0.9,\ud83d\udd34 [Networking] Service has no endpoints : count(kube_endpoint_address_available) by (endpoint,namespace) == 0,\ud83d\udd34 [Networking] DNS resolution failing : rate(coredns_dns_responses_total{rcode=\"SERVFAIL\"}[5m]) > 0,\ud83d\udd34 [Networking] CoreDNS crashing : rate(coredns_panics_total[5m]) > 0,\ud83d\udd34 [Networking] Calico CNI agent down : up{job=\"calico-node\"} == 0,\ud83d\udfe1 [Networking] Calico dataplane failures : sum by (instance) (increase(felix_int_dataplane_failures[10m])) > 0,\ud83d\udfe1 [Networking] Calico iptables errors : sum(increase(felix_iptables_restore_errors[5m])) > 0,\ud83d\udfe1 [Networking] LoadBalancer pending / no external IP : kube_service_spec_type{type=\"LoadBalancer\"},\ud83d\udfe1 [Ingress] Ingress 404s : sum(rate(nginx_ingress_controller_requests{status=\"404\"}[5m])) by (ingress),\ud83d\udd34 [Ingress] Ingress 502s : sum(rate(nginx_ingress_controller_requests{status=\"502\"}[5m])) by (ingress),\ud83d\udd34 [Ingress] Ingress 503s : sum(rate(nginx_ingress_controller_requests{status=\"503\"}[5m])) by (ingress),\ud83d\udd34 [Storage] PVC Pending : kube_persistentvolumeclaim_status_phase{phase=\"Pending\"} == 1,\u26aa [Storage] PV Released : kube_persistentvolume_status_phase{phase=\"Released\"} == 1,\ud83d\udfe1 [Storage] No default StorageClass : count(kube_storageclass_info{is_default_class=\"true\"}) == 0,\ud83d\udfe1 [Deployment] Rollout stuck : kube_deployment_status_replicas_updated != kube_deployment_spec_replicas,\ud83d\udfe1 [Deployment] ReplicaSet not scaling : kube_replicaset_status_replicas != kube_replicaset_spec_replicas,\ud83d\udd34 [Deployment] Deployment unavailable : kube_deployment_status_replicas_unavailable > 0,\ud83d\udd34 [Deployment] ProgressDeadlineExceeded : kube_deployment_status_condition{condition=\"Progressing\", status=\"false\"} == 1,\ud83d\udfe1 [Deployment] HPA not scaling : kube_horizontalpodautoscaler_status_condition{condition=\"ScalingActive\", status=\"false\"} == 1,\ud83d\udfe1 [Deployment] HPA unknown metrics : kube_horizontalpodautoscaler_status_condition{condition=\"AbleToScale\", status=\"unknown\"} == 1,\ud83d\udfe1 [Security] Forbidden (RBAC 403) : sum(rate(apiserver_request_total{code=\"403\"}[5m])) by (user,resource),\ud83d\udfe1 [Security] Unauthorized (401) : sum(rate(apiserver_request_total{code=\"401\"}[5m])),\ud83d\udd34 [Security] Secret not found : kube_pod_container_status_waiting_reason{reason=\"CreateContainerConfigError\"} == 1,\ud83d\udfe1 [Security] Certificate expiring : (certmanager_certificate_expiration_timestamp_seconds - time()) / 86400 < 14,\ud83d\udd34 [Node] Node NotReady : kube_node_status_condition{condition=\"Ready\", status=\"true\"} == 0,\ud83d\udd34 [Node] Disk pressure : kube_node_status_condition{condition=\"DiskPressure\", status=\"true\"} == 1,\ud83d\udd34 [Node] Memory pressure : kube_node_status_condition{condition=\"MemoryPressure\", status=\"true\"} == 1,\ud83d\udd34 [Node] PID pressure : kube_node_status_condition{condition=\"PIDPressure\", status=\"true\"} == 1,\ud83d\udd34 [Node] Network unavailable : kube_node_status_condition{condition=\"NetworkUnavailable\", status=\"true\"} == 1,\u26aa [Explorer] Pod: container detail : kube_pod_container_info{namespace=\"$namespace\",pod=\"$pod\"},\u26aa [Explorer] Pod: CPU usage vs request/limit : sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\",pod=\"$pod\",container!=\"\",container!=\"POD\"}[5m])),\u26aa [Explorer] Pod: memory usage vs request/limit : sum(container_memory_working_set_bytes{namespace=\"$namespace\",pod=\"$pod\",container!=\"\",container!=\"POD\"}),\u26aa [Explorer] Pod: network I/O : sum(rate(container_network_receive_bytes_total{namespace=\"$namespace\",pod=\"$pod\"}[5m])),\u26aa [Explorer] Deployment \u2192 backing pods : kube_pod_info{namespace=\"$namespace\"} * on(pod,namespace) group_left() kube_pod_owner{namespace=\"$namespace\",owner_kind=\"ReplicaSet\",owner_name=~\"^$deployment-[a-z0-9]+$\"},\u26aa [Explorer] Service \u2192 endpoint readiness : sum(kube_endpoint_address_available{namespace=\"$namespace\",endpoint=\"$service\"}),\ud83d\udfe1 [Inventory] DaemonSet not fully ready : kube_daemonset_status_desired_number_scheduled != on(namespace,daemonset) kube_daemonset_status_number_ready,\ud83d\udfe1 [Inventory] StatefulSet not fully ready : kube_statefulset_replicas != on(namespace,statefulset) kube_statefulset_status_replicas_ready,\ud83d\udfe1 [Inventory] Jobs currently failing : kube_job_status_failed > 0,\ud83d\udfe1 [Inventory] PodDisruptionBudget blocking : kube_poddisruptionbudget_status_pod_disruptions_allowed == 0,\u26aa [Inventory] NetworkPolicy rule counts : kube_networkpolicy_spec_ingress_rules,\u26aa [Inventory] Total object counts (all types) : count(kube_deployment_created),\ud83d\udfe1 [Platform] istiod config sync errors : sum(pilot_xds_push_errors),\u26aa [Platform] Envoy request rate : sum(rate(envoy_http_downstream_rq_total[5m])),\ud83d\udfe1 [Platform] ArgoCD apps out of sync : count(argocd_app_info{sync_status!=\"Synced\"}),\ud83d\udd34 [Platform] ArgoCD apps unhealthy : count(argocd_app_info{health_status!=\"Healthy\"}),\ud83d\udd34 [Platform] Vault sealed : vault_core_unsealed == bool(0),\u26aa [Host CPU] CPU usage % : 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100),\u26aa [Host CPU] CPU usage by mode : sum by (instance,mode) (rate(node_cpu_seconds_total[5m])),\u26aa [Host CPU] Load average (1/5/15m) : node_load1,\u26aa [Host CPU] Load per core (normalized) : node_load1 / count(node_cpu_seconds_total{mode=\"system\"}) by (instance),\u26aa [Host CPU] Context switches/sec : rate(node_context_switches_total[5m]),\u26aa [Host CPU] Running / blocked processes : node_procs_running,\u26aa [Host Mem] Memory usage % : 100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)),\u26aa [Host Mem] Memory available (bytes) : node_memory_MemAvailable_bytes,\ud83d\udfe1 [Host Mem] Swap in use : node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes,\u26aa [Host Mem] Entropy available : node_entropy_available_bits,\u26aa [Host Disk] Disk usage % : 100 - ((node_filesystem_avail_bytes{fstype!~\"tmpfs|overlay\"} * 100) / node_filesystem_size_bytes{fstype!~\"tmpfs|overlay\"}),\u26aa [Host Disk] Inode usage % : 100 - (node_filesystem_files_free / node_filesystem_files * 100),\u26aa [Host Disk] Disk I/O time (saturation) : rate(node_disk_io_time_seconds_total[5m]),\u26aa [Host Disk] Disk read/write throughput : rate(node_disk_read_bytes_total[5m]),\ud83d\udd34 [Host Disk] Time until disk fills (forecast) : predict_linear(node_filesystem_avail_bytes{mountpoint=\"/\"}[1h], 4*3600) < 0,\u26aa [Host Net] Network throughput RX/TX : rate(node_network_receive_bytes_total[5m]),\ud83d\udfe1 [Host Net] Network errors : rate(node_network_receive_errs_total[5m]),\ud83d\udfe1 [Host Net] Network drops : rate(node_network_transmit_drop_total[5m]),\u26aa [Host Misc] Time since last boot : time() - node_boot_time_seconds,\ud83d\udfe1 [Host Misc] Clock drift : node_timex_offset_seconds,\ud83d\udfe1 [Host Misc] Open file descriptors : node_filefd_allocated / node_filefd_maximum,\ud83d\udfe1 [Container] CPU throttling : rate(container_cpu_cfs_throttled_seconds_total{container!=\"\",container!=\"POD\"}[5m]) > 0,\u26aa [Container] Top 10 CPU consumers : topk(10, sum by (pod,namespace) (rate(container_cpu_usage_seconds_total{container!=\"\",container!=\"POD\"}[5m]))),\u26aa [Container] Top 10 memory consumers : topk(10, sum by (pod,namespace) (container_memory_working_set_bytes{container!=\"\",container!=\"POD\"})),\ud83d\udd34 [Container] Container-level OOM events : increase(container_oom_events_total[15m]) > 0,\u26aa [Container] Container filesystem usage : container_fs_usage_bytes{container!=\"\",container!=\"POD\"},\u26aa [USE] CPU : rate(container_cpu_cfs_throttled_seconds_total[5m]),\u26aa [USE] Memory : increase(container_oom_events_total[15m]),\u26aa [USE] Disk : iostat error counters \u2014 not exported by node_exporter by default,\u26aa [USE] Network : rate(node_network_receive_errs_total[5m]),\u26aa [FinOps] Requested-but-unused CPU : sum(kube_pod_container_resource_requests{resource=\"cpu\"}) - sum(rate(container_cpu_usage_seconds_total{container!=\"\",container!=\"POD\"}[5m])),\u26aa [FinOps] Requested-but-unused memory : sum(kube_pod_container_resource_requests{resource=\"memory\"}) - sum(container_memory_working_set_bytes{container!=\"\",container!=\"POD\"}),\ud83d\udfe1 [FinOps] Containers with zero CPU request : count(kube_pod_container_info) unless on(pod,namespace,container) kube_pod_container_resource_requests{resource=\"cpu\"},\ud83d\udfe1 [FinOps] CPU limit overcommit ratio (per node) : sum(kube_pod_container_resource_limits{resource=\"cpu\"}) by (node) / on(node) sum(kube_node_status_allocatable{resource=\"cpu\"}) by (node),\u26aa [FinOps] Idle nodes (candidates to scale down) : 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[1h])) * 100) < 5,\u26aa [MLOps] KServe controller health : up{job=\"kube-state-metrics\"} and on(pod) kube_pod_info{namespace=\"kserve\"},\ud83d\udd34 [AIOps] Linear forecast (generic) : predict_linear(node_filesystem_avail_bytes[1h], 4*3600) < 0,\ud83d\udd34 [AIOps] Metric went missing entirely : absent(up{job=\"kube-apiserver\"}),\ud83d\udfe1 [AIOps] Flapping detector : changes(kube_pod_container_status_ready{namespace=\"default\"}[10m]) > 4",
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "\ud83d\udd34 [Scheduling] NodeSelector / taints / affinity unsatisfied",
+          "value": "{job=\"k8s-events\"} | json | reason=\"FailedScheduling\""
+        },
+        "includeAll": false,
+        "label": "Scenario (LogQL)",
+        "multi": false,
+        "name": "log_scenario",
+        "options": [
+          {
+            "selected": true,
+            "text": "\ud83d\udd34 [Scheduling] NodeSelector / taints / affinity unsatisfied",
+            "value": "{job=\"k8s-events\"} | json | reason=\"FailedScheduling\""
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udfe1 [Scheduling] LimitRange violation",
+            "value": "{job=\"k8s-events\"} | json | message=~\"(?i)limitrange|exceeded quota\""
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Storage] VolumeMount failed",
+            "value": "{job=\"k8s-events\"} | json | reason=~\"FailedMount|FailedAttachVolume\""
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Storage] MountVolume failed",
+            "value": "{job=\"k8s-events\"} | json | reason=~\"FailedMount|FailedAttachVolume\""
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Storage] Multi-Attach error",
+            "value": "{job=\"k8s-events\"} | json | message=~\"(?i)already attached to another node\""
+          },
+          {
+            "selected": false,
+            "text": "\ud83d\udd34 [Security] ServiceAccount missing",
+            "value": "{job=\"k8s-events\"} | json | message=~\"(?i)serviceaccount\" | message=~\"(?i)not found\""
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Explorer] Pod: logs",
+            "value": "{job=\"kubernetes-containers\", namespace=\"$namespace\", pod=\"$pod\"}"
+          },
+          {
+            "selected": false,
+            "text": "\u26aa [Explorer] Pod: related events",
+            "value": "{job=\"k8s-events\"} | json | involvedObject_namespace=\"$namespace\" | involvedObject_name=\"$pod\""
+          }
+        ],
+        "query": "\ud83d\udd34 [Scheduling] NodeSelector / taints / affinity unsatisfied : {job=\"k8s-events\"} | json | reason=\"FailedScheduling\",\ud83d\udfe1 [Scheduling] LimitRange violation : {job=\"k8s-events\"} | json | message=~\"(?i)limitrange|exceeded quota\",\ud83d\udd34 [Storage] VolumeMount failed : {job=\"k8s-events\"} | json | reason=~\"FailedMount|FailedAttachVolume\",\ud83d\udd34 [Storage] MountVolume failed : {job=\"k8s-events\"} | json | reason=~\"FailedMount|FailedAttachVolume\",\ud83d\udd34 [Storage] Multi-Attach error : {job=\"k8s-events\"} | json | message=~\"(?i)already attached to another node\",\ud83d\udd34 [Security] ServiceAccount missing : {job=\"k8s-events\"} | json | message=~\"(?i)serviceaccount\" | message=~\"(?i)not found\",\u26aa [Explorer] Pod: logs : {job=\"kubernetes-containers\", namespace=\"$namespace\", pod=\"$pod\"},\u26aa [Explorer] Pod: related events : {job=\"k8s-events\"} | json | involvedObject_namespace=\"$namespace\" | involvedObject_name=\"$pod\"",
+        "type": "custom"
+      },
+      {
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "${DS_PROMETHEUS}",
+        "includeAll": true,
+        "label": "Node",
+        "multi": false,
+        "name": "node",
+        "options": [],
+        "query": "label_values(node_boot_time_seconds, instance)",
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "all",
+          "value": ".*"
+        },
+        "includeAll": false,
+        "label": "Live Log Severity",
+        "multi": false,
+        "name": "log_severity",
+        "options": [
+          {
+            "selected": true,
+            "text": "all",
+            "value": ".*"
+          },
+          {
+            "selected": false,
+            "text": "critical",
+            "value": "(?i)error|panic|fatal|crashloop|oomkill|down|sealed"
+          },
+          {
+            "selected": false,
+            "text": "warning",
+            "value": "(?i)warn|retry|throttl|pending|degraded"
+          }
+        ],
+        "query": "all : .*,critical : (?i)error|panic|fatal|crashloop|oomkill|down|sealed,warning : (?i)warn|retry|throttl|pending|degraded",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Incident Cockpit",
+  "uid": "incident-cockpit",
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus"
+    },
+    {
+      "name": "DS_LOKI",
+      "label": "Loki",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "loki"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "loki",
+      "name": "Loki",
+      "version": "1.0.0"
+    }
+  ]
+}

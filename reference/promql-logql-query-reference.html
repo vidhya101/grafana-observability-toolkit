@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<title>PromQL &amp; LogQL Query Reference — devops-lab</title>
+<style>
+  :root {
+    --bg: #f3f5f6;
+    --surface: #ffffff;
+    --surface-2: #eceff1;
+    --border: #d7dee2;
+    --text: #1b2226;
+    --text-dim: #57666d;
+    --text-faint: #7c8a90;
+    --accent: #b9791f;
+    --accent-soft: rgba(185,121,31,0.10);
+    --promql: #1f6f9c;
+    --promql-soft: rgba(31,111,156,0.09);
+    --logql: #2f8f52;
+    --logql-soft: rgba(47,143,82,0.09);
+    --na: #8a949b;
+    --na-soft: rgba(138,148,155,0.10);
+    --shadow: 0 1px 2px rgba(20,30,35,0.06);
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #10151a;
+      --surface: #171e24;
+      --surface-2: #1d252c;
+      --border: #2b343c;
+      --text: #e7ecef;
+      --text-dim: #93a3ac;
+      --text-faint: #6c7a82;
+      --accent: #e2a640;
+      --accent-soft: rgba(226,166,64,0.12);
+      --promql: #6fb3d9;
+      --promql-soft: rgba(111,179,217,0.10);
+      --logql: #7fbf8f;
+      --logql-soft: rgba(127,191,143,0.10);
+      --na: #6b7680;
+      --na-soft: rgba(107,118,128,0.14);
+      --shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10151a; --surface: #171e24; --surface-2: #1d252c; --border: #2b343c;
+    --text: #e7ecef; --text-dim: #93a3ac; --text-faint: #6c7a82;
+    --accent: #e2a640; --accent-soft: rgba(226,166,64,0.12);
+    --promql: #6fb3d9; --promql-soft: rgba(111,179,217,0.10);
+    --logql: #7fbf8f; --logql-soft: rgba(127,191,143,0.10);
+    --na: #6b7680; --na-soft: rgba(107,118,128,0.14);
+    --shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+  :root[data-theme="light"] {
+    --bg: #f3f5f6; --surface: #ffffff; --surface-2: #eceff1; --border: #d7dee2;
+    --text: #1b2226; --text-dim: #57666d; --text-faint: #7c8a90;
+    --accent: #b9791f; --accent-soft: rgba(185,121,31,0.10);
+    --promql: #1f6f9c; --promql-soft: rgba(31,111,156,0.09);
+    --logql: #2f8f52; --logql-soft: rgba(47,143,82,0.09);
+    --na: #8a949b; --na-soft: rgba(138,148,155,0.10);
+    --shadow: 0 1px 2px rgba(20,30,35,0.06);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  code, .mono, .q-cell, input#search {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+  }
+  ::selection { background: var(--accent-soft); }
+
+  .masthead {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 20px clamp(16px, 4vw, 40px) 16px;
+  }
+  .masthead-top {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+  h1 {
+    font-size: clamp(1.35rem, 1.1rem + 1vw, 1.7rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    margin: 4px 0 0;
+    max-width: 62ch;
+  }
+  .counts {
+    display: flex; gap: 10px; flex-wrap: wrap; font-size: 0.78rem; color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .counts b { color: var(--text); font-weight: 600; }
+
+  .controls {
+    display: flex; gap: 10px; align-items: center; margin-top: 14px; flex-wrap: wrap;
+  }
+  input#search {
+    flex: 1 1 240px;
+    min-width: 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 9px 12px 9px 34px;
+    font-size: 0.85rem;
+    outline: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2393a3ac' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 11px center;
+    transition: border-color .15s ease;
+  }
+  input#search:focus { border-color: var(--accent); }
+  input#search::placeholder { color: var(--text-faint); font-family: -apple-system, "Segoe UI", sans-serif; }
+
+  .chip {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--text); }
+  .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .chip.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+  main { padding: 8px clamp(16px, 4vw, 40px) 64px; max-width: 1320px; margin: 0 auto; }
+
+  section.cat { margin-top: 40px; scroll-margin-top: 132px; }
+  .cat-head {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+  }
+  .cat-head h2 {
+    font-size: 1.05rem; font-weight: 700; margin: 0; letter-spacing: -0.005em;
+  }
+  .cat-note {
+    color: var(--text-faint); font-size: 0.8rem; font-weight: 400;
+  }
+  .cat-badge {
+    font-size: 0.7rem; color: var(--text-faint); background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  table { border-collapse: collapse; width: 100%; min-width: 880px; }
+  thead th {
+    position: sticky; top: 0;
+    background: var(--surface-2);
+    text-align: left;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-faint);
+    font-weight: 700;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-2); }
+  tbody tr.hide { display: none; }
+  td {
+    padding: 11px 14px;
+    vertical-align: top;
+    font-size: 0.85rem;
+  }
+  td.scenario { min-width: 170px; font-weight: 600; color: var(--text); }
+  td.scenario .row-n { color: var(--text-faint); font-weight: 500; font-size: 0.72rem; margin-right: 5px; }
+  td.query { min-width: 340px; }
+  td.query code {
+    display: block;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  td.output { min-width: 200px; color: var(--text-dim); font-size: 0.82rem; }
+  td.when { min-width: 200px; color: var(--text-dim); font-size: 0.82rem; }
+  td.type { white-space: nowrap; }
+
+  .pill {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 3px 8px;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+  .pill-promql { background: var(--promql-soft); color: var(--promql); }
+  .pill-logql { background: var(--logql-soft); color: var(--logql); }
+  .pill-na { background: var(--na-soft); color: var(--na); }
+  .pill-tmpl { background: var(--accent-soft); color: var(--accent); }
+
+  .sev-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: 2px;
+    flex: none;
+  }
+  .sev-critical { background: var(--crit, #d1483f); box-shadow: 0 0 0 3px color-mix(in srgb, #d1483f 18%, transparent); }
+  .sev-warning { background: #d19a3d; box-shadow: 0 0 0 3px color-mix(in srgb, #d19a3d 16%, transparent); }
+  .sev-info { background: var(--text-faint); }
+  tr[data-sev="critical"] td.scenario { color: #d1483f; }
+  @media (prefers-color-scheme: dark) { tr[data-sev="critical"] td.scenario { color: #f0897e; } .sev-critical { background: #f0897e; } }
+  :root[data-theme="dark"] tr[data-sev="critical"] td.scenario { color: #f0897e; }
+  :root[data-theme="dark"] .sev-critical { background: #f0897e; }
+  :root[data-theme="light"] tr[data-sev="critical"] td.scenario { color: #d1483f; }
+  :root[data-theme="light"] .sev-critical { background: #d1483f; }
+
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--text); }
+  th.sortable .arrow { display: inline-block; margin-left: 4px; opacity: .5; font-size: .65rem; }
+  th.sortable.sorted-asc .arrow, th.sortable.sorted-desc .arrow { opacity: 1; color: var(--accent); }
+
+  .tutorial {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 20px clamp(16px, 3vw, 28px); margin-bottom: 20px;
+  }
+  .tutorial h3 { font-size: 0.95rem; font-weight: 700; margin: 0 0 12px; }
+  .tutorial > p { color: var(--text-dim); font-size: 0.86rem; margin: 0 0 16px; max-width: 68ch; }
+  .anatomy-query {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    font-size: 0.95rem; line-height: 2.1; background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px 16px; overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+  }
+  .tok { padding: 2px 3px; border-radius: 4px; }
+  .tok-metric { background: var(--promql-soft); color: var(--promql); font-weight: 600; }
+  .tok-label { background: var(--logql-soft); color: var(--logql); }
+  .tok-fn { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .tok-op { color: #b0468e; font-weight: 700; }
+  @media (prefers-color-scheme: dark) { .tok-op { color: #e08fce; } }
+  :root[data-theme="dark"] .tok-op { color: #e08fce; }
+  :root[data-theme="light"] .tok-op { color: #b0468e; }
+  .anatomy-legend { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 14px; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; color: var(--text-dim); }
+  .legend-swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+  .swatch-metric { background: var(--promql); }
+  .swatch-label { background: var(--logql); }
+  .swatch-fn { background: var(--accent); }
+  .swatch-op { background: #b0468e; }
+  :root[data-theme="dark"] .swatch-op { background: #e08fce; }
+
+  .steps { display: flex; flex-direction: column; gap: 14px; margin-top: 4px; }
+  .step { display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start; }
+  .step-n {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;
+    color: var(--text-dim); font-variant-numeric: tabular-nums;
+  }
+  .step p { margin: 2px 0 0; font-size: 0.85rem; color: var(--text-dim); }
+  .step code { font-size: 0.82rem; }
+
+  .chip.sev-chip-critical.active { background: rgba(209,72,63,0.14); border-color: #d1483f; color: #d1483f; }
+  .chip.sev-chip-warning.active { background: rgba(209,154,61,0.14); border-color: #d19a3d; color: #d19a3d; }
+  @media (prefers-color-scheme: dark) { .chip.sev-chip-critical.active { color: #f0897e; border-color: #f0897e; } }
+  :root[data-theme="dark"] .chip.sev-chip-critical.active { color: #f0897e; border-color: #f0897e; }
+  :root[data-theme="light"] .chip.sev-chip-critical.active { color: #d1483f; border-color: #d1483f; }
+
+  .part {
+    max-width: 1320px; margin: 56px auto 0; padding: 0 clamp(16px, 4vw, 40px);
+  }
+  .part-head {
+    border-top: 1px solid var(--border);
+    padding-top: 22px;
+    margin-bottom: 4px;
+  }
+  .part-head .eyebrow {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .part-head h2.part-title {
+    font-size: 1.3rem; font-weight: 700; margin: 4px 0 6px; letter-spacing: -0.01em;
+  }
+  .part-head p {
+    color: var(--text-dim); font-size: 0.88rem; max-width: 68ch; margin: 0 0 8px;
+  }
+
+  .empty-state {
+    display: none;
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-faint);
+    font-size: 0.9rem;
+  }
+
+  footer {
+    max-width: 1320px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px) 48px;
+    color: var(--text-faint); font-size: 0.78rem;
+  }
+  footer a { color: var(--text-dim); }
+
+  @media (max-width: 640px) {
+    td.query { min-width: 260px; }
+  }
+</style>
+
+<div class="masthead">
+  <div class="masthead-top">
+    <div>
+      <h1>PromQL &amp; LogQL Query Reference</h1>
+      <p class="subtitle">Every diagnostic query across SRE, DevOps, platform, cloud, MLOps and AIOps troubleshooting — the query, what it returns, and the situation that calls for it. Live rows are tested against this cluster's actual Prometheus/Loki; template rows are correct, standard patterns for systems not yet running here.</p>
+    </div>
+    <div class="counts" id="counts"></div>
+  </div>
+  <div class="controls">
+    <input id="search" type="text" placeholder="Filter by keyword — e.g. OOMKilled, node, replica, DNS, Redis, GPU…" autocomplete="off">
+    <button class="chip active" data-filter="all">All types</button>
+    <button class="chip" data-filter="promql">PromQL</button>
+    <button class="chip" data-filter="logql">LogQL</button>
+    <button class="chip" data-filter="na">Not applicable here</button>
+  </div>
+  <div class="controls" style="margin-top:8px;">
+    <button class="chip active" data-status="all">Live + templates</button>
+    <button class="chip" data-status="live">Live in this cluster only</button>
+    <button class="chip" data-status="tmpl">Templates only</button>
+  </div>
+  <div class="controls" style="margin-top:8px;">
+    <span style="font-size:0.72rem; color: var(--text-faint); font-weight:700; text-transform:uppercase; letter-spacing:.05em; align-self:center;">In an active incident →</span>
+    <button class="chip active" data-sev="all">All severities</button>
+    <button class="chip sev-chip-critical" data-sev="critical">🔴 Critical only</button>
+    <button class="chip sev-chip-warning" data-sev="warning">🟡 Warning only</button>
+    <button class="chip sev-chip-info" data-sev="info">Info only</button>
+  </div>
+</div>
+
+
+<main>
+<nav style="display:flex; flex-wrap:wrap; gap:8px; margin: 20px 0 4px;">
+  <!-- quick jump chips, filled by JS from section titles -->
+</nav>
+
+<div class="part" style="margin-top:8px;">
+  <div class="part-head" style="border-top:none; padding-top:0;">
+    <div class="eyebrow">Start Here</div>
+    <h2 class="part-title">How to Read (and Write) a PromQL Query</h2>
+    <p>If you've never written one of these, start here. Every query on this page is built from the same handful of pieces, in the same order — once you can name the pieces, you can write your own.</p>
+  </div>
+</div>
+
+<div class="tutorial">
+  <h3>1. Anatomy of a query</h3>
+  <p>Here's a real one from this page (row 6b — the OOM early-warning check), colored piece by piece:</p>
+  <div class="anatomy-query"><span class="tok tok-metric">container_memory_working_set_bytes</span> / <span class="tok tok-op">on</span>(pod,namespace,container) <span class="tok tok-metric">kube_pod_container_resource_limits</span><span class="tok tok-label">{resource="memory"}</span> <span class="tok tok-op">&gt;</span> 0.9</div>
+  <div class="anatomy-legend">
+    <div class="legend-item"><span class="legend-swatch swatch-metric"></span>Metric name — which time series to pull</div>
+    <div class="legend-item"><span class="legend-swatch swatch-label"></span>Label matcher <code>{...}</code> — filters which series of that metric</div>
+    <div class="legend-item"><span class="legend-swatch swatch-op"></span>Operator — vector-match (<code>on()</code>) or comparison (<code>&gt;</code>)</div>
+  </div>
+</div>
+
+<div class="tutorial">
+  <h3>2. Reading it left to right</h3>
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><div><code>container_memory_working_set_bytes</code><p>Start with a metric name. On its own, this returns <em>every</em> time series for it — one per container, across every pod, in every namespace. Too much to be useful yet.</p></div></div>
+    <div class="step"><div class="step-n">2</div><div><code>kube_pod_container_resource_limits{resource="memory"}</code><p>The <code>{resource="memory"}</code> part is a label matcher — it narrows a metric down to just the series where that label equals that value. Without it you'd get CPU limits mixed in with memory limits.</p></div></div>
+    <div class="step"><div class="step-n">3</div><div><code>a / on(pod,namespace,container) b</code><p>Dividing one metric by another only works if Prometheus knows how to pair up matching series between them — <code>on(pod,namespace,container)</code> says "match rows where these three labels are identical." This is the single most common thing beginners get stuck on.</p></div></div>
+    <div class="step"><div class="step-n">4</div><div><code>&gt; 0.9</code><p>The comparison at the end turns a number into a yes/no. Drop it and you get the raw ratio for every container, as a graph; keep it and you get only the containers currently over 90% — exactly what you'd wire into an alert.</p></div></div>
+  </div>
+</div>
+
+<div class="tutorial">
+  <h3>3. The evaluation loop — what <code>for:</code> actually does</h3>
+  <p>Prometheus doesn't run a query once — it re-runs <em>every</em> query and <em>every</em> alerting rule on a fixed clock (<code>evaluation_interval</code>, usually 15s–1m). That repeating tick is the "loop." An alert rule's <code>for:</code> duration says how many consecutive ticks the condition has to stay true before it actually pages you:</p>
+  <div class="anatomy-query">alert: FailedSchedulingEvents
+expr: <span class="tok tok-fn">sum(count_over_time(</span>{job="k8s-events"} | json | reason="FailedScheduling"<span class="tok tok-fn">[5m])) &gt; 0</span>
+<span class="tok tok-op">for: 1m</span></div>
+  <div class="steps" style="margin-top:14px;">
+    <div class="step"><div class="step-n">t=0s</div><div><p>Condition first becomes true. State flips to <strong>pending</strong> — visible in Prometheus's UI, but nothing pages yet.</p></div></div>
+    <div class="step"><div class="step-n">t=15s</div><div><p>Next tick. Still true → stays <strong>pending</strong>. If it had gone false here, it would silently reset to <strong>inactive</strong> and nothing would ever fire — this is what stops a single blip from paging anyone.</p></div></div>
+    <div class="step"><div class="step-n">t=60s</div><div><p>The full <code>for: 1m</code> has now elapsed with the condition true the entire time → state flips to <strong>firing</strong> and Alertmanager is notified.</p></div></div>
+  </div>
+</div>
+
+<div class="tutorial">
+  <h3>4. Comparison &amp; boolean logic</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Operator</th><th>Example</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td class="scenario"><code>==</code></td><td class="query"><code>reason="FailedScheduling"</code></td><td class="output">Exactly equal.</td></tr>
+      <tr><td class="scenario"><code>!=</code></td><td class="query"><code>kube_replicaset_status_replicas != kube_replicaset_spec_replicas</code></td><td class="output">Not equal — the classic "actual doesn't match desired" pattern.</td></tr>
+      <tr><td class="scenario"><code>=~</code></td><td class="query"><code>reason=~"FailedMount|FailedAttachVolume"</code></td><td class="output">Regex match — true if the label matches <em>any</em> of the alternatives.</td></tr>
+      <tr><td class="scenario"><code>!~</code></td><td class="query"><code>fstype!~"tmpfs|overlay"</code></td><td class="output">Regex <em>non</em>-match — excludes anything matching the pattern.</td></tr>
+      <tr><td class="scenario"><code>&gt; &lt; &gt;= &lt;=</code></td><td class="query"><code>node_load1 / count(...) &gt; 1</code></td><td class="output">Numeric comparison, same as any language.</td></tr>
+      <tr><td class="scenario"><code>and</code></td><td class="query"><code>a and on(pod) b</code></td><td class="output">Keeps only series present in <em>both</em> sides — a set intersection, used constantly to join two metrics together.</td></tr>
+      <tr><td class="scenario"><code>or</code></td><td class="query"><code>count(x) or vector(0)</code></td><td class="output">Falls back to the right side only when the left side has zero results — the exact trick this whole page uses so a healthy stat panel shows "0" instead of going blank.</td></tr>
+      <tr><td class="scenario"><code>unless</code></td><td class="query"><code>count(kube_pod_container_info) unless on(pod,namespace,container) kube_pod_container_resource_requests</code></td><td class="output">Keeps only series from the left that have <em>no</em> match on the right — "find things missing a corresponding row."</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="tutorial">
+  <h3>5. What the colored dot next to every row means</h3>
+  <p>Every diagnostic row below carries a severity dot — click a table's first column header to sort by it, or use the "In an active incident" filter chips at the top of the page to instantly narrow the whole reference to just one level.</p>
+  <div class="anatomy-legend">
+    <div class="legend-item"><span class="sev-dot sev-critical"></span><strong>Critical</strong> — active failure or outage; stop and act</div>
+    <div class="legend-item"><span class="sev-dot sev-warning"></span><strong>Warning</strong> — degraded or trending toward failure; investigate soon</div>
+    <div class="legend-item"><span class="sev-dot sev-info"></span><strong>Info</strong> — context, inventory, or a diagnostic tool rather than an alert condition</div>
+  </div>
+</div>
+
+<section class="cat" id="cat-pod">
+  <div class="cat-head"><h2>Pod &amp; Container Errors</h2><span class="cat-badge">12 queries</span></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">1</span>CrashLoopBackOff</td><td class="query"><code>kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff"} == 1</code></td><td class="output">One row per container currently crash-looping (value fixed at 1).</td><td class="when">Instant health check or stat-panel count; page the moment any container starts flapping.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">1b</span>Restart rate</td><td class="query"><code>increase(kube_pod_container_status_restarts_total[15m]) &gt; 3</code></td><td class="output">Containers whose restart counter grew by more than 3 in the last 15 minutes.</td><td class="when">Catches flapping <em>before</em> Kubernetes fully backs it off into CrashLoopBackOff.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">2</span>ImagePullBackOff</td><td class="query"><code>kube_pod_container_status_waiting_reason{reason="ImagePullBackOff"} == 1</code></td><td class="output">Containers stuck retrying an image pull.</td><td class="when">Image tag typo'd, registry unreachable, or rate-limited.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">3</span>ErrImagePull</td><td class="query"><code>kube_pod_container_status_waiting_reason{reason="ErrImagePull"} == 1</code></td><td class="output">Containers where the pull failed outright (not just retrying).</td><td class="when">Image doesn't exist, or registry auth/imagePullSecret is wrong.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">4</span>CreateContainerConfigError</td><td class="query"><code>kube_pod_container_status_waiting_reason{reason="CreateContainerConfigError"} == 1</code></td><td class="output">Containers blocked before creation.</td><td class="when">A referenced ConfigMap/Secret key is missing or the object doesn't exist.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">5</span>CreateContainerError</td><td class="query"><code>kube_pod_container_status_waiting_reason{reason="CreateContainerError"} == 1</code></td><td class="output">Containers the runtime failed to create.</td><td class="when">Bad volume mount, invalid securityContext, or another spec-level runtime rejection.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">6</span>OOMKilled</td><td class="query"><code>kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} == 1</code></td><td class="output">Containers whose last exit was an out-of-memory kill.</td><td class="when">Container is exceeding its memory limit — confirms it after the fact.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">6b</span>OOM leading indicator</td><td class="query"><code>container_memory_working_set_bytes / on(pod,namespace,container) kube_pod_container_resource_limits{resource="memory"} &gt; 0.9</code></td><td class="output">Containers currently above 90% of their memory limit.</td><td class="when">Catch the OOM <em>before</em> it happens — this is what the Workload Health memory gauge watches.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">7</span>Unexpected exit (Error)</td><td class="query"><code>kube_pod_container_status_last_terminated_reason{reason="Error"} == 1</code></td><td class="output">Containers that exited non-zero for a reason other than OOM.</td><td class="when">App crashed on its own — go read logs for the actual stack trace.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">8</span>Completed (unexpected)</td><td class="query"><code>kube_pod_status_phase{phase="Succeeded"} == 1 and on(pod,namespace) kube_pod_owner{owner_kind="ReplicaSet"}</code></td><td class="output">Deployment-owned pods sitting in <code>Succeeded</code> phase.</td><td class="when">A long-running workload exited like a batch job — always anomalous for a Deployment.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">9</span>ContainerCannotRun</td><td class="query"><code>kube_pod_container_status_waiting_reason{reason="ContainerCannotRun"} == 1</code></td><td class="output">Containers whose entrypoint/command couldn't execute.</td><td class="when">Binary missing from the image, or the command in the spec is wrong.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">10</span>InvalidImageName</td><td class="query"><code>kube_pod_container_status_waiting_reason{reason="InvalidImageName"} == 1</code></td><td class="output">Containers with a malformed image reference.</td><td class="when">Typo in the image string itself (bad characters, missing tag separator, etc).</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-sched">
+  <div class="cat-head"><h2>Scheduling &amp; Capacity</h2><span class="cat-badge">9 queries</span></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">11</span>Pending forever</td><td class="query"><code>(time() - kube_pod_created) &gt; 300 and on(pod,namespace) kube_pod_status_phase{phase="Pending"} == 1</code></td><td class="output">Pods that have been Pending for more than 5 minutes.</td><td class="when">Scheduler can't place it — check node capacity, taints, or affinity next.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">12</span>Insufficient CPU (cluster)</td><td class="query"><code>sum(kube_node_status_allocatable{resource="cpu"}) - sum(kube_pod_container_resource_requests{resource="cpu"})</code></td><td class="output">Raw cores of CPU headroom left across the whole cluster.</td><td class="when">Watch the trend line — heading toward zero means the next pod won't schedule.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">13</span>Insufficient Memory (cluster)</td><td class="query"><code>sum(kube_node_status_allocatable{resource="memory"}) - sum(kube_pod_container_resource_requests{resource="memory"})</code></td><td class="output">Bytes of memory headroom left across the cluster.</td><td class="when">Same idea as CPU headroom, for RAM.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">14–16</span>NodeSelector / taints / affinity unsatisfied</td><td class="query"><code>{job="k8s-events"} | json | reason="FailedScheduling"</code></td><td class="output">The raw scheduler event text, including which predicate failed.</td><td class="when">No steady metric exists for <em>why</em> scheduling failed — only the event carries the reason.</td><td class="type"><span class="pill pill-logql">LogQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">17</span>PVC not bound</td><td class="query"><code>kube_persistentvolumeclaim_status_phase{phase="Pending"} == 1</code></td><td class="output">Claims stuck unbound.</td><td class="when">Pod can't schedule because its volume was never provisioned — check StorageClass next.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">18</span>Too many pods per node</td><td class="query"><code>count(kube_pod_info) by (node) / on(node) kube_node_status_capacity{resource="pods"} &gt; 0.9</code></td><td class="output">Nodes above 90% of their max-pods ceiling.</td><td class="when">New pods will fail to schedule on that node specifically, even with CPU/mem free.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">19</span>ResourceQuota exceeded</td><td class="query"><code>kube_resourcequota{type="used"} / on(namespace,resource) kube_resourcequota{type="hard"} &gt; 0.9</code></td><td class="output">Namespace/resource pairs above 90% of their quota.</td><td class="when">Team is about to hit a hard wall on CPU, memory, or object-count quota.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">20</span>LimitRange violation</td><td class="query"><code>{job="k8s-events"} | json | message=~"(?i)limitrange|exceeded quota"</code></td><td class="output">The admission-rejection event text.</td><td class="when"><code>kube_limitrange</code> only shows the configured limits — the actual violation only ever appears as an event.</td><td class="type"><span class="pill pill-logql">LogQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-net">
+  <div class="cat-head"><h2>Networking, DNS &amp; CNI</h2><span class="cat-badge">11 queries</span></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">21</span>Service has no endpoints</td><td class="query"><code>count(kube_endpoint_address_available) by (endpoint,namespace) == 0</code></td><td class="output">Services whose selector currently matches zero healthy pods.</td><td class="when">Requests to the service will hang or connection-refuse — selector/label mismatch or all backing pods are down.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">22</span>DNS resolution failing</td><td class="query"><code>rate(coredns_dns_responses_total{rcode="SERVFAIL"}[5m]) &gt; 0</code></td><td class="output">Non-zero SERVFAIL rate from CoreDNS.</td><td class="when">CoreDNS is up but actively failing lookups — check its upstream resolvers.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">22b</span>CoreDNS crashing</td><td class="query"><code>rate(coredns_panics_total[5m]) &gt; 0</code></td><td class="output">Non-zero panic rate inside the CoreDNS process.</td><td class="when">CoreDNS itself is unstable, not just slow — different fix path than SERVFAIL.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">23</span>Connection timed out</td><td class="query"><code class="mono">— app request-timeout counters, or CNI drop counters (e.g. cilium_drop_count_total)</code></td><td class="output">Nothing from this cluster's stack — no metric exists.</td><td class="when">Needs the app itself to expose a timeout counter, or a CNI that emits packet-drop metrics (this cluster's CNI is Calico, which doesn't).</td><td class="type"><span class="pill pill-na">Not applicable here</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">24</span>Connection refused</td><td class="query"><code class="mono">— app connection-error counters</code></td><td class="output">Nothing from this cluster's stack.</td><td class="when">Purely app-instrumented — nothing Kubernetes-native reports this.</td><td class="type"><span class="pill pill-na">Not applicable here</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">25</span>Calico CNI agent down</td><td class="query"><code>up{job="calico-node"} == 0</code></td><td class="output">Nodes where the Felix agent isn't responding to scrape.</td><td class="when">Pod-to-pod networking on that node is compromised — CNI itself is unhealthy.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Calico dataplane failures</td><td class="query"><code>sum by (instance) (increase(felix_int_dataplane_failures[10m])) &gt; 0</code></td><td class="output">Nodes where Felix failed to program iptables/eBPF rules.</td><td class="when">Networking looks up but rules aren't actually being applied correctly.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Calico iptables errors</td><td class="query"><code>sum(increase(felix_iptables_restore_errors[5m])) &gt; 0</code></td><td class="output">Count of failed iptables-restore calls.</td><td class="when">Lower-level confirmation the dataplane programming itself is erroring.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">29–30</span>LoadBalancer pending / no external IP</td><td class="query"><code>kube_service_spec_type{type="LoadBalancer"}</code></td><td class="output">Every LoadBalancer-type service — cross-reference against <code>kubectl get svc</code> for a missing <code>EXTERNAL-IP</code>.</td><td class="when">kube-state-metrics' LB-ingress coverage varies by version; this is the best-effort PromQL half of the check.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>— same, ground truth</td><td class="query"><code class="mono">kubectl get svc -A</code></td><td class="output">Actual <code>EXTERNAL-IP</code> column.</td><td class="when">The metric can't fully confirm assignment — this is the authoritative check.</td><td class="type"><span class="pill pill-na">Not applicable here</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-ingress">
+  <div class="cat-head"><h2>Ingress Traffic</h2><span class="cat-badge">3 queries</span></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">26</span>Ingress 404s</td><td class="query"><code>sum(rate(nginx_ingress_controller_requests{status="404"}[5m])) by (ingress)</code></td><td class="output">404 rate per Ingress object.</td><td class="when">Routing rule doesn't match the request path the client is actually sending.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">27</span>Ingress 502s</td><td class="query"><code>sum(rate(nginx_ingress_controller_requests{status="502"}[5m])) by (ingress)</code></td><td class="output">502 rate per Ingress object.</td><td class="when">Backend pod is unreachable or crashed mid-request.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">28</span>Ingress 503s</td><td class="query"><code>sum(rate(nginx_ingress_controller_requests{status="503"}[5m])) by (ingress)</code></td><td class="output">503 rate per Ingress object.</td><td class="when">No healthy backend endpoint exists at all for that route.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-storage">
+  <div class="cat-head"><h2>Storage</h2><span class="cat-badge">8 queries</span></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">31</span>PVC Pending</td><td class="query"><code>kube_persistentvolumeclaim_status_phase{phase="Pending"} == 1</code></td><td class="output">Same query as row 17 — same underlying view.</td><td class="when">Usually a StorageClass problem: wrong provisioner, or none configured.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">32</span>VolumeMount failed</td><td class="query"><code>{job="k8s-events"} | json | reason=~"FailedMount|FailedAttachVolume"</code></td><td class="output">The kubelet's mount-failure event text.</td><td class="when">Mount path or permissions issue — no steady metric, event-only.</td><td class="type"><span class="pill pill-logql">LogQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">33</span>AttachVolume failed</td><td class="query"><code class="mono">— cloud CSI driver operation-error metrics (name varies by driver), otherwise events</code></td><td class="output">Nothing generic — depends entirely on which CSI driver is installed.</td><td class="when">This cluster uses local-path-provisioner, which doesn't expose this; fall back to events.</td><td class="type"><span class="pill pill-na">Not applicable here</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">34</span>MountVolume failed</td><td class="query"><code>{job="k8s-events"} | json | reason=~"FailedMount|FailedAttachVolume"</code></td><td class="output">Same event stream as row 32.</td><td class="when">Filesystem or mount-level error at the node.</td><td class="type"><span class="pill pill-logql">LogQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">35</span>Multi-Attach error</td><td class="query"><code>{job="k8s-events"} | json | message=~"(?i)already attached to another node"</code></td><td class="output">The exact event text naming the conflicting node.</td><td class="when">Disk is exclusively attached elsewhere — common after an ungraceful node failover.</td><td class="type"><span class="pill pill-logql">LogQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">36</span>Read-only filesystem</td><td class="query"><code class="mono">— node_exporter textfile collector (if configured)</code></td><td class="output">Nothing by default.</td><td class="when">No universal metric exists; would need custom node-level wiring not present here.</td><td class="type"><span class="pill pill-na">Not applicable here</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span><span class="row-n">37</span>PV Released</td><td class="query"><code>kube_persistentvolume_status_phase{phase="Released"} == 1</code></td><td class="output">Volumes waiting for reclaim after their claim was deleted.</td><td class="when">Not urgent, but flags storage that needs cleanup.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">38</span>No default StorageClass</td><td class="query"><code>count(kube_storageclass_info{is_default_class="true"}) == 0</code></td><td class="output">True/nonzero when the cluster has zero StorageClasses flagged default.</td><td class="when">Any PVC that omits <code>storageClassName</code> will fail to bind.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-deploy">
+  <div class="cat-head"><h2>Deployment &amp; Autoscaling</h2><span class="cat-badge">6 queries</span></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">39</span>Rollout stuck</td><td class="query"><code>kube_deployment_status_replicas_updated != kube_deployment_spec_replicas</code></td><td class="output">Deployments where updated replicas haven't caught up to desired (sustained).</td><td class="when">New revision isn't rolling out — usually a failing readiness probe on the new pods.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">40</span>ReplicaSet not scaling</td><td class="query"><code>kube_replicaset_status_replicas != kube_replicaset_spec_replicas</code></td><td class="output">ReplicaSets whose actual count doesn't match desired.</td><td class="when">Same symptom as row 39, scoped one level down to the ReplicaSet itself.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">41</span>Deployment unavailable</td><td class="query"><code>kube_deployment_status_replicas_unavailable &gt; 0</code></td><td class="output">Deployments with at least one unavailable replica.</td><td class="when">Pods exist but aren't passing readiness — traffic capacity is reduced.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">42</span>ProgressDeadlineExceeded</td><td class="query"><code>kube_deployment_status_condition{condition="Progressing", status="false"} == 1</code></td><td class="output">Deployments that blew past their allowed rollout time window.</td><td class="when">Rollout is definitively stuck, not just slow — get the exact reason via <code>kubectl describe</code>.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">43</span>HPA not scaling</td><td class="query"><code>kube_horizontalpodautoscaler_status_condition{condition="ScalingActive", status="false"} == 1</code></td><td class="output">HPAs that have stopped actively adjusting replicas.</td><td class="when">Load is changing but replica count isn't following it.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">44</span>HPA unknown metrics</td><td class="query"><code>kube_horizontalpodautoscaler_status_condition{condition="AbleToScale", status="unknown"} == 1</code></td><td class="output">HPAs that can't read their target metric at all.</td><td class="when">metrics-server or a custom-metrics pipeline feeding the HPA is broken.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-sec">
+  <div class="cat-head"><h2>Security &amp; API Server</h2><span class="cat-badge">5 queries</span></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">45</span>Forbidden (RBAC 403)</td><td class="query"><code>sum(rate(apiserver_request_total{code="403"}[5m])) by (user,resource)</code></td><td class="output">403 rate broken out by identity and resource.</td><td class="when">A new line appearing, or a spike, usually means an over-restrictive Role/RoleBinding.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">46</span>Unauthorized (401)</td><td class="query"><code>sum(rate(apiserver_request_total{code="401"}[5m]))</code></td><td class="output">Total 401 rate against the API server.</td><td class="when">A spike suggests expired tokens or a broken auth integration fleet-wide.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">47</span>ServiceAccount missing</td><td class="query"><code>{job="k8s-events"} | json | message=~"(?i)serviceaccount" | message=~"(?i)not found"</code></td><td class="output">Admission-time event naming the missing ServiceAccount.</td><td class="when">Pod spec references a ServiceAccount that doesn't exist in that namespace.</td><td class="type"><span class="pill pill-logql">LogQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">48</span>Secret not found</td><td class="query"><code>kube_pod_container_status_waiting_reason{reason="CreateContainerConfigError"} == 1</code></td><td class="output">Same table as row 4 — the Secret name shows up in the detail.</td><td class="when">Usually caught indirectly through the config-error reason rather than its own signal.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span><span class="row-n">49</span>Certificate expiring</td><td class="query"><code>(certmanager_certificate_expiration_timestamp_seconds - time()) / 86400 &lt; 14</code></td><td class="output">Certificates with fewer than 14 days left, in days-remaining form.</td><td class="when">Renewal window — alert before it actually expires and breaks TLS.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-node">
+  <div class="cat-head"><h2>Node &amp; Cluster Health</h2><span class="cat-badge">5 queries</span></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">50</span>Node NotReady</td><td class="query"><code>kube_node_status_condition{condition="Ready", status="true"} == 0</code></td><td class="output">Nodes that have dropped out of Ready state.</td><td class="when">Kubelet unreachable, or the node failed its own health checks.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">50b</span>Disk pressure</td><td class="query"><code>kube_node_status_condition{condition="DiskPressure", status="true"} == 1</code></td><td class="output">Nodes low on disk space.</td><td class="when">Kubelet will start evicting pods to reclaim disk if this persists.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">50c</span>Memory pressure</td><td class="query"><code>kube_node_status_condition{condition="MemoryPressure", status="true"} == 1</code></td><td class="output">Nodes low on memory.</td><td class="when">Same eviction risk as disk pressure, for RAM.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">50d</span>PID pressure</td><td class="query"><code>kube_node_status_condition{condition="PIDPressure", status="true"} == 1</code></td><td class="output">Nodes running out of process IDs.</td><td class="when">Usually a fork-bomb-style workload or a leak spawning unbounded processes.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span><span class="row-n">50e</span>Network unavailable</td><td class="query"><code>kube_node_status_condition{condition="NetworkUnavailable", status="true"} == 1</code></td><td class="output">Nodes whose networking isn't configured/healthy.</td><td class="when">CNI never finished initializing on that node, or lost configuration.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-explorer">
+  <div class="cat-head"><h2>Pod / Deployment / Service Explorer</h2><span class="cat-note">the drill-down queries behind the three Explorer dashboards</span></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Pod: container detail</td><td class="query"><code>kube_pod_container_info{namespace="$namespace",pod="$pod"}</code></td><td class="output">One row per container: image, image ID, container ID.</td><td class="when">Confirm exactly which image tag/digest is actually running right now.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Pod: CPU usage vs request/limit</td><td class="query"><code>sum(rate(container_cpu_usage_seconds_total{namespace="$namespace",pod="$pod",container!="",container!="POD"}[5m]))</code></td><td class="output">Actual CPU cores consumed, as a time series.</td><td class="when">Overlay against request/limit lines to see if a pod is throttled or over-provisioned.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Pod: memory usage vs request/limit</td><td class="query"><code>sum(container_memory_working_set_bytes{namespace="$namespace",pod="$pod",container!="",container!="POD"})</code></td><td class="output">Actual working-set memory in bytes.</td><td class="when">Same idea as CPU — the exact metric row 6b's ratio is built from.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Pod: network I/O</td><td class="query"><code>sum(rate(container_network_receive_bytes_total{namespace="$namespace",pod="$pod"}[5m]))</code></td><td class="output">Bytes/sec received by the pod's network namespace.</td><td class="when">Diagnosing a suspected network bottleneck or unexpected traffic volume on one pod.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Pod: logs</td><td class="query"><code>{job="kubernetes-containers", namespace="$namespace", pod="$pod"}</code></td><td class="output">Live-tailed stdout/stderr for every container in that pod.</td><td class="when">Always the next step after any of the stat panels above turns red.</td><td class="type"><span class="pill pill-logql">LogQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Pod: related events</td><td class="query"><code>{job="k8s-events"} | json | involvedObject_namespace="$namespace" | involvedObject_name="$pod"</code></td><td class="output">Every Kubernetes event naming that specific pod.</td><td class="when">Full admission/scheduling/probe history for one pod, in order.</td><td class="type"><span class="pill pill-logql">LogQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Deployment → backing pods</td><td class="query"><code>kube_pod_info{namespace="$namespace"} * on(pod,namespace) group_left() kube_pod_owner{namespace="$namespace",owner_kind="ReplicaSet",owner_name=~"^$deployment-[a-z0-9]+$"}</code></td><td class="output">Only the pods currently owned by that Deployment's live ReplicaSet.</td><td class="when">Need the exact pod list for a Deployment without guessing at ReplicaSet hashes.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Service → endpoint readiness</td><td class="query"><code>sum(kube_endpoint_address_available{namespace="$namespace",endpoint="$service"})</code></td><td class="output">Count of ready addresses backing one specific service.</td><td class="when">Per-service version of row 21, scoped to a single service you're investigating.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-inventory">
+  <div class="cat-head"><h2>Object Inventory</h2><span class="cat-note">every workload/config object type kube-state-metrics tracks, beyond Pods and Deployments</span></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>DaemonSet not fully ready</td><td class="query"><code>kube_daemonset_status_desired_number_scheduled != on(namespace,daemonset) kube_daemonset_status_number_ready</code></td><td class="output">DaemonSets where ready count hasn't caught up to desired.</td><td class="when">Something like Calico or Promtail isn't running on every node it should be.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>StatefulSet not fully ready</td><td class="query"><code>kube_statefulset_replicas != on(namespace,statefulset) kube_statefulset_status_replicas_ready</code></td><td class="output">StatefulSets where ready replicas lag spec.</td><td class="when">Ordered rollout (e.g. Vault, a database) is stuck partway through.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Jobs currently failing</td><td class="query"><code>kube_job_status_failed &gt; 0</code></td><td class="output">Jobs with at least one failed pod attempt.</td><td class="when">A one-off or CronJob-spawned Job isn't completing successfully.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>PodDisruptionBudget blocking</td><td class="query"><code>kube_poddisruptionbudget_status_pod_disruptions_allowed == 0</code></td><td class="output">PDBs currently allowing zero further disruptions.</td><td class="when">Explains why a node drain or rolling update is stuck waiting.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>NetworkPolicy rule counts</td><td class="query"><code>kube_networkpolicy_spec_ingress_rules</code></td><td class="output">Ingress rule count per NetworkPolicy object.</td><td class="when">Confirming a policy actually has rules attached, not an empty/default-deny shell.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Total object counts (all types)</td><td class="query"><code>count(kube_deployment_created)</code> · <code>count(kube_daemonset_created)</code> · <code>count(kube_job_created)</code> · <code>count(kube_cronjob_created)</code> · <code>count(kube_ingress_created)</code></td><td class="output">A single number per object type.</td><td class="when">Fleet-wide inventory — the exact pattern every count tile in the Object Inventory dashboard uses.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-platform">
+  <div class="cat-head"><h2>Service Mesh, GitOps &amp; Secrets</h2><span class="cat-note">Istio, ArgoCD, Vault</span></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>istiod config sync errors</td><td class="query"><code>sum(pilot_xds_push_errors)</code></td><td class="output">Count of failed config pushes from istiod to Envoy sidecars.</td><td class="when">A sidecar somewhere is running stale routing/policy config.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Envoy request rate</td><td class="query"><code>sum(rate(envoy_http_downstream_rq_total[5m]))</code></td><td class="output">Requests/sec hitting the ingress gateway's Envoy proxy.</td><td class="when">Mesh-wide traffic baseline, or confirming the gateway is receiving anything at all.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>ArgoCD apps out of sync</td><td class="query"><code>count(argocd_app_info{sync_status!="Synced"})</code></td><td class="output">Count of Applications whose live state has drifted from Git.</td><td class="when">Someone made a manual cluster change, or a sync is failing silently.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>ArgoCD apps unhealthy</td><td class="query"><code>count(argocd_app_info{health_status!="Healthy"})</code></td><td class="output">Count of Applications ArgoCD itself considers unhealthy.</td><td class="when">Rollout succeeded per Git, but the resulting workload isn't actually healthy.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Vault sealed</td><td class="query"><code>vault_core_unsealed == bool(0)</code></td><td class="output">True when Vault is sealed and can't serve secrets.</td><td class="when">Every app depending on Vault for secrets will start failing — highest-severity Vault signal.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-cloud">
+  <div class="cat-head"><h2>Cloud-Specific (EKS / AKS)</h2><span class="cat-note">kept for reference — this is a kubeadm cluster, so none of these apply</span></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>IRSA misconfiguration</td><td class="query"><code class="mono">AccessDenied/403s in app logs; STS AssumeRoleWithWebIdentity failures in CloudTrail</code></td><td class="output">N/A on this cluster.</td><td class="when">Only relevant on EKS with IAM Roles for Service Accounts configured.</td><td class="type"><span class="pill pill-na">Not applicable here</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>VPC CNI IP exhaustion</td><td class="query"><code class="mono">"no available IP addresses" in pod events; kubectl logs -n kube-system daemonset/aws-node</code></td><td class="output">N/A — this cluster runs Calico, not the AWS VPC CNI.</td><td class="when">EKS-only failure mode.</td><td class="type"><span class="pill pill-na">Not applicable here</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>EBS CSI driver missing</td><td class="query"><code>kube_storageclass_info</code> — check for no <code>ebs.csi.aws.com</code> provisioner</td><td class="output">N/A — no EBS CSI driver is installed or expected here.</td><td class="when">EKS-only; this cluster uses local-path-provisioner instead.</td><td class="type"><span class="pill pill-na">Not applicable here</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Azure Disk attach failures</td><td class="query"><code class="mono">same pattern as generic AttachVolume — CSI-driver-specific</code></td><td class="output">N/A — not an AKS cluster.</td><td class="when">AKS-only failure mode.</td><td class="type"><span class="pill pill-na">Not applicable here</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Managed Identity permission errors</td><td class="query"><code class="mono">app-level auth failures in logs, not a Grafana metric panel</code></td><td class="output">N/A — no Azure Managed Identity in this environment.</td><td class="when">AKS-only; same shape of problem as IRSA on EKS.</td><td class="type"><span class="pill pill-na">Not applicable here</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<div class="part">
+  <div class="part-head">
+    <div class="eyebrow">Part Two</div>
+    <h2 class="part-title">Server &amp; Host Fundamentals</h2>
+    <p>The queries that answer "is the box okay" — CPU, memory, disk, network, process table. Universal across any Linux host running node_exporter, VM or bare metal, in or out of Kubernetes.</p>
+  </div>
+</div>
+
+<section class="cat" id="cat-hostcpu">
+  <div class="cat-head"><h2>Host: CPU</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>CPU usage %</td><td class="query"><code>100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)</code></td><td class="output">Overall CPU utilization per host, as a percentage.</td><td class="when">The single most-run query in any on-call rotation — first thing to check on a slow-server report.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>CPU usage by mode</td><td class="query"><code>sum by (instance,mode) (rate(node_cpu_seconds_total[5m]))</code></td><td class="output">Time spent in user/system/iowait/irq/steal per host.</td><td class="when">High <code>iowait</code> means disk-bound, not CPU-bound; high <code>steal</code> means the hypervisor is starving your VM.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Load average (1/5/15m)</td><td class="query"><code>node_load1</code> · <code>node_load5</code> · <code>node_load15</code></td><td class="output">Classic Unix load average, three windows.</td><td class="when">Compare 1m vs 15m to see if load is spiking or sustained; the exact "top" numbers everyone already knows how to read.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Load per core (normalized)</td><td class="query"><code>node_load1 / count(node_cpu_seconds_total{mode="system"}) by (instance)</code></td><td class="output">Load average divided by core count — &gt;1 means genuinely overloaded.</td><td class="when">Raw load average is meaningless without knowing core count; this fixes that for a fair cross-host comparison.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Context switches/sec</td><td class="query"><code>rate(node_context_switches_total[5m])</code></td><td class="output">Context switch rate per host.</td><td class="when">A sudden spike often means CPU contention or a misbehaving process thrashing between cores.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Running / blocked processes</td><td class="query"><code>node_procs_running</code> · <code>node_procs_blocked</code></td><td class="output">Count of processes currently runnable vs blocked on I/O.</td><td class="when">Rising blocked-process count with flat CPU usage points at I/O starvation, not compute.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-hostmem">
+  <div class="cat-head"><h2>Host: Memory &amp; Swap</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Memory usage %</td><td class="query"><code>100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))</code></td><td class="output">Real memory pressure as a percentage (accounts for reclaimable cache).</td><td class="when">Second most-run query after CPU — use <code>MemAvailable</code>, never raw <code>MemFree</code>, which over-counts pressure.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Memory available (bytes)</td><td class="query"><code>node_memory_MemAvailable_bytes</code></td><td class="output">Absolute bytes free for new allocations.</td><td class="when">Capacity planning — "how much headroom does this box actually have."</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Swap in use</td><td class="query"><code>node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes</code></td><td class="output">Bytes of swap currently used.</td><td class="when">Any non-zero swap on a server that shouldn't be swapping is an early warning sign, well before OOM.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Entropy available</td><td class="query"><code>node_entropy_available_bits</code></td><td class="output">Bits of entropy in the kernel pool.</td><td class="when">Low entropy stalls TLS handshakes and key generation — a surprisingly common, hard-to-diagnose slowdown on minimal VMs/containers.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-hostdisk">
+  <div class="cat-head"><h2>Host: Disk &amp; Filesystem</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Disk usage %</td><td class="query"><code>100 - ((node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} * 100) / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"})</code></td><td class="output">Percentage full, per mountpoint.</td><td class="when">Classic "disk full" pager — check this before anything gets weird about a service that writes to disk.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Inode usage %</td><td class="query"><code>100 - (node_filesystem_files_free / node_filesystem_files * 100)</code></td><td class="output">Percentage of inodes consumed, per mountpoint.</td><td class="when">A filesystem can hit "no space left on device" with plenty of bytes free if it's out of inodes — millions of tiny files (logs, cache) is the usual cause.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Disk I/O time (saturation)</td><td class="query"><code>rate(node_disk_io_time_seconds_total[5m])</code></td><td class="output">Fraction of a second the disk was busy servicing requests.</td><td class="when">Approaching 1 (100%) means the disk itself is the bottleneck, regardless of what iostat-style throughput looks like.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Disk read/write throughput</td><td class="query"><code>rate(node_disk_read_bytes_total[5m])</code> · <code>rate(node_disk_written_bytes_total[5m])</code></td><td class="output">Bytes/sec read and written per disk device.</td><td class="when">Confirms whether a slow app is actually pushing bytes, or just blocked waiting.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Time until disk fills (forecast)</td><td class="query"><code>predict_linear(node_filesystem_avail_bytes{mountpoint="/"}[1h], 4*3600) &lt; 0</code></td><td class="output">True if, at the current fill rate, <code>/</code> will be full within 4 hours.</td><td class="when">The single highest-value AIOps-style query on this whole page — pages you before the disk fills, not after.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-hostnet">
+  <div class="cat-head"><h2>Host: Network</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Network throughput RX/TX</td><td class="query"><code>rate(node_network_receive_bytes_total[5m])</code> · <code>rate(node_network_transmit_bytes_total[5m])</code></td><td class="output">Bytes/sec in and out, per interface.</td><td class="when">Bandwidth saturation check, or confirming traffic is actually flowing through the interface you expect.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Network errors</td><td class="query"><code>rate(node_network_receive_errs_total[5m])</code></td><td class="output">Receive-error rate per interface.</td><td class="when">Non-zero almost always means a physical/driver/NIC problem, not an application one.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Network drops</td><td class="query"><code>rate(node_network_transmit_drop_total[5m])</code></td><td class="output">Transmit-drop rate per interface.</td><td class="when">Buffer overrun or a queueing discipline dropping packets under load.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-hostmisc">
+  <div class="cat-head"><h2>Host: Uptime, Clock &amp; File Descriptors</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Time since last boot</td><td class="query"><code>time() - node_boot_time_seconds</code></td><td class="output">Uptime in seconds.</td><td class="when">Confirms whether a host silently rebooted — often the first clue behind "the problem just fixed itself."</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Clock drift</td><td class="query"><code>node_timex_offset_seconds</code></td><td class="output">Seconds of offset from the reference clock.</td><td class="when">Drift breaks TLS cert validation, distributed locks, and log-correlation across hosts — check this before anything looks "impossible."</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Open file descriptors</td><td class="query"><code>node_filefd_allocated / node_filefd_maximum</code></td><td class="output">Fraction of the system-wide fd limit in use.</td><td class="when">"Too many open files" errors — confirm it's a real ceiling problem before chasing the app for a leak.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-cadvisor">
+  <div class="cat-head"><h2>Container Deep-Dive (cAdvisor)</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>CPU throttling</td><td class="query"><code>rate(container_cpu_cfs_throttled_seconds_total{container!="",container!="POD"}[5m]) &gt; 0</code></td><td class="output">Containers actively being CPU-throttled by the kernel CFS scheduler.</td><td class="when">The single most under-checked metric in Kubernetes: a container can look "fine" on CPU % and still be throttled hard because its <em>limit</em> is too tight.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Top 10 CPU consumers</td><td class="query"><code>topk(10, sum by (pod,namespace) (rate(container_cpu_usage_seconds_total{container!="",container!="POD"}[5m])))</code></td><td class="output">The ten hungriest pods cluster-wide, ranked.</td><td class="when">"What's actually eating this node" during a capacity incident.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Top 10 memory consumers</td><td class="query"><code>topk(10, sum by (pod,namespace) (container_memory_working_set_bytes{container!="",container!="POD"}))</code></td><td class="output">The ten heaviest pods by working-set memory.</td><td class="when">Same idea as CPU, for a memory-pressure incident.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Container-level OOM events</td><td class="query"><code>increase(container_oom_events_total[15m]) &gt; 0</code></td><td class="output">Containers killed by the kernel OOM killer in the last 15 minutes.</td><td class="when">Cgroup-level counterpart to row 6 — catches OOM kills cAdvisor sees even if kube-state-metrics' view is momentarily stale.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Container filesystem usage</td><td class="query"><code>container_fs_usage_bytes{container!="",container!="POD"}</code></td><td class="output">Bytes written to a container's writable layer.</td><td class="when">An app writing logs/temp files inside the container instead of a volume — silently fills the node's disk.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<div class="part">
+  <div class="part-head">
+    <div class="eyebrow">Part Three</div>
+    <h2 class="part-title">Golden Signals — RED &amp; USE Method</h2>
+    <p>The framework every SRE eventually converges on. <strong>RED</strong> (Rate, Errors, Duration) for anything that serves requests; <strong>USE</strong> (Utilization, Saturation, Errors) for anything that's a resource. These are generic patterns — they assume your app exposes Prometheus-client-style <code>http_requests_total</code>/<code>_duration_seconds_bucket</code> metrics, which is the near-universal convention across Go, Java, Python, and Node client libraries.</p>
+  </div>
+</div>
+
+<section class="cat" id="cat-red">
+  <div class="cat-head"><h2>RED: Rate, Errors, Duration</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Request rate</td><td class="query"><code>sum(rate(http_requests_total[5m])) by (service)</code></td><td class="output">Requests/sec per service.</td><td class="when">Baseline traffic — always the first panel on any service dashboard.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Error rate %</td><td class="query"><code>sum(rate(http_requests_total{status=~"5.."}[5m])) by (service) / sum(rate(http_requests_total[5m])) by (service) * 100</code></td><td class="output">Percentage of requests returning 5xx, per service.</td><td class="when">The number every SLO burn-rate alert is built on.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Latency p50 / p95 / p99</td><td class="query"><code>histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le,service))</code></td><td class="output">99th-percentile request latency per service.</td><td class="when">Tail latency is what users feel — never rely on the average alone.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>In-flight / concurrent requests</td><td class="query"><code>sum(http_requests_in_flight) by (service)</code></td><td class="output">Requests currently being processed, not yet completed.</td><td class="when">Saturation signal for request-serving workloads — climbing steadily while rate is flat means requests are piling up.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-use">
+  <div class="cat-head"><h2>USE: Utilization, Saturation, Errors — mapped to what's live here</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Resource<span class="arrow">▲▼</span></th><th>Utilization query</th><th>Saturation query</th><th>Errors query</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>CPU</td><td class="query"><code>100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))*100)</code></td><td class="query"><code>node_load1 / count(node_cpu_seconds_total{mode="system"}) by (instance)</code></td><td class="query"><code>rate(container_cpu_cfs_throttled_seconds_total[5m])</code></td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Memory</td><td class="query"><code>100*(1-node_memory_MemAvailable_bytes/node_memory_MemTotal_bytes)</code></td><td class="query"><code>node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes &gt; 0</code></td><td class="query"><code>increase(container_oom_events_total[15m])</code></td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Disk</td><td class="query"><code>100-(node_filesystem_avail_bytes*100/node_filesystem_size_bytes)</code></td><td class="query"><code>rate(node_disk_io_time_seconds_total[5m])</code></td><td class="query"><code class="mono">iostat error counters — not exported by node_exporter by default</code></td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Network</td><td class="query"><code>rate(node_network_receive_bytes_total[5m])</code></td><td class="query"><code class="mono">no universal saturation metric — approximate with drop rate</code></td><td class="query"><code>rate(node_network_receive_errs_total[5m])</code></td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<div class="part">
+  <div class="part-head">
+    <div class="eyebrow">Part Four</div>
+    <h2 class="part-title">Common Exporters — Reference Templates</h2>
+    <p>Standard, widely-used queries for systems <strong>not currently running in this cluster</strong>. Every row here is marked <span class="pill pill-tmpl">TEMPLATE</span> — the query pattern is correct and copy-paste-ready the moment you deploy the matching exporter, but nothing will return data today.</p>
+  </div>
+</div>
+
+<section class="cat" id="cat-postgres">
+  <div class="cat-head"><h2>PostgreSQL (postgres_exporter)</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Instance up</td><td class="query"><code>pg_up == 0</code></td><td class="output">Postgres instances the exporter can't reach.</td><td class="when">First check in any "app can't connect to DB" incident.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Active connections</td><td class="query"><code>pg_stat_activity_count</code></td><td class="output">Current connection count, by state/database.</td><td class="when">Approaching <code>max_connections</code> — the classic "too many connections" outage.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Transaction rate</td><td class="query"><code>rate(pg_stat_database_xact_commit[5m])</code></td><td class="output">Committed transactions/sec.</td><td class="when">Database-level throughput baseline.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Replication lag</td><td class="query"><code>pg_replication_lag_seconds &gt; 30</code></td><td class="output">Replicas lagging more than 30s behind primary.</td><td class="when">Reads from a replica are stale, or failover would lose data.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Dead tuples (bloat)</td><td class="query"><code>pg_stat_user_tables_n_dead_tup</code></td><td class="output">Dead-row count per table.</td><td class="when">Autovacuum isn't keeping up — precursor to bloat-driven slow queries.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-mysql">
+  <div class="cat-head"><h2>MySQL / MariaDB (mysqld_exporter)</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Instance up</td><td class="query"><code>mysql_up == 0</code></td><td class="output">Unreachable MySQL instances.</td><td class="when">Connectivity check, same role as <code>pg_up</code>.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Connected threads</td><td class="query"><code>mysql_global_status_threads_connected</code></td><td class="output">Current connection count.</td><td class="when">Approaching <code>max_connections</code>.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Slow query rate</td><td class="query"><code>rate(mysql_global_status_slow_queries[5m])</code></td><td class="output">Slow queries/sec.</td><td class="when">Query performance regression, often after a schema or index change.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Replication lag</td><td class="query"><code>mysql_slave_status_seconds_behind_master &gt; 30</code></td><td class="output">Replicas lagging more than 30 seconds.</td><td class="when">Same replication-staleness concern as Postgres.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-redis">
+  <div class="cat-head"><h2>Redis (redis_exporter)</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Instance up</td><td class="query"><code>redis_up == 0</code></td><td class="output">Unreachable Redis instances.</td><td class="when">Cache/session-store connectivity check.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Memory used</td><td class="query"><code>redis_memory_used_bytes / redis_memory_max_bytes &gt; 0.9</code></td><td class="output">Instances above 90% of their configured max memory.</td><td class="when">About to start evicting keys or, without an eviction policy, rejecting writes.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Connected clients</td><td class="query"><code>redis_connected_clients</code></td><td class="output">Current client connection count.</td><td class="when">Connection-leak detection on the calling application.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Evicted keys</td><td class="query"><code>rate(redis_evicted_keys_total[5m]) &gt; 0</code></td><td class="output">Keys being evicted under memory pressure.</td><td class="when">Cache is undersized for its working set — hit rate is about to drop.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Command rate</td><td class="query"><code>rate(redis_commands_processed_total[5m])</code></td><td class="output">Commands/sec processed.</td><td class="when">Throughput baseline, or confirming Redis is even receiving traffic.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-kafka">
+  <div class="cat-head"><h2>Kafka (kafka_exporter)</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Consumer group lag</td><td class="query"><code>kafka_consumergroup_lag &gt; 10000</code></td><td class="output">Consumer groups more than 10k messages behind.</td><td class="when">The single most important Kafka health signal — a consumer is falling behind or stalled.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Broker count</td><td class="query"><code>kafka_brokers</code></td><td class="output">Number of brokers the exporter can see.</td><td class="when">Confirms the cluster hasn't silently lost a broker.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Under-replicated partitions</td><td class="query"><code>kafka_topic_partition_under_replicated_partition &gt; 0</code></td><td class="output">Partitions not fully replicated.</td><td class="when">Durability at risk — one more broker loss could mean data loss.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-rabbit">
+  <div class="cat-head"><h2>RabbitMQ (rabbitmq-exporter / built-in plugin)</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Queue depth</td><td class="query"><code>rabbitmq_queue_messages &gt; 10000</code></td><td class="output">Queues holding more than 10k unprocessed messages.</td><td class="when">Consumers aren't keeping up, or have stopped entirely.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Ready vs unacked</td><td class="query"><code>rabbitmq_queue_messages_ready</code> · <code>rabbitmq_queue_messages_unacknowledged</code></td><td class="output">Messages waiting vs currently being processed.</td><td class="when">High unacked count with flat ready count means consumers are stuck, not just slow.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Consumer count</td><td class="query"><code>rabbitmq_queue_consumers == 0</code></td><td class="output">Queues with zero active consumers.</td><td class="when">A worker deployment silently scaled to zero or crashed entirely.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-blackbox">
+  <div class="cat-head"><h2>Uptime &amp; TLS (blackbox_exporter)</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Endpoint down</td><td class="query"><code>probe_success == 0</code></td><td class="output">Probed endpoints (HTTP/TCP/ICMP) currently failing.</td><td class="when">Synthetic/external uptime monitoring — catches outages your own metrics can't (DNS, LB, network path).</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Unexpected HTTP status</td><td class="query"><code>probe_http_status_code &gt;= 400</code></td><td class="output">Probes returning a client/server error.</td><td class="when">Endpoint is reachable but not actually working correctly.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>TLS cert expiring</td><td class="query"><code>(probe_ssl_earliest_cert_expiry - time()) / 86400 &lt; 14</code></td><td class="output">Probed certs expiring within 14 days.</td><td class="when">External/public-facing counterpart to the cert-manager query (row 49) — catches certs cert-manager doesn't manage.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Probe latency</td><td class="query"><code>probe_duration_seconds</code></td><td class="output">Time the probe itself took to complete.</td><td class="when">External-facing latency, including DNS + TCP + TLS handshake time — closer to what a real user experiences.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<div class="part">
+  <div class="part-head">
+    <div class="eyebrow">Part Five</div>
+    <h2 class="part-title">FinOps &amp; Resource Governance</h2>
+    <p>Waste-detection queries — where you're paying for capacity nobody is using, or running workloads with no resource governance at all (the exact class of bug behind most of the incidents fixed earlier in this build).</p>
+  </div>
+</div>
+
+<section class="cat" id="cat-finops">
+  <div class="cat-head"><h2>Waste &amp; Over-provisioning</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Requested-but-unused CPU</td><td class="query"><code>sum(kube_pod_container_resource_requests{resource="cpu"}) - sum(rate(container_cpu_usage_seconds_total{container!="",container!="POD"}[5m]))</code></td><td class="output">Cores reserved but sitting idle, cluster-wide.</td><td class="when">Right-sizing exercise — this is capacity you're paying for and not using.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Requested-but-unused memory</td><td class="query"><code>sum(kube_pod_container_resource_requests{resource="memory"}) - sum(container_memory_working_set_bytes{container!="",container!="POD"})</code></td><td class="output">Bytes of memory reserved but not actually used.</td><td class="when">Same right-sizing exercise, for RAM.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Containers with zero CPU request</td><td class="query"><code>count(kube_pod_container_info) unless on(pod,namespace,container) kube_pod_container_resource_requests{resource="cpu"}</code></td><td class="output">Every container running with no CPU governance at all.</td><td class="when">The exact class of bug that caused kube-state-metrics, jaeger, and cert-manager to crash-loop earlier — worth a permanent panel, not a one-off check.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>CPU limit overcommit ratio (per node)</td><td class="query"><code>sum(kube_pod_container_resource_limits{resource="cpu"}) by (node) / on(node) sum(kube_node_status_allocatable{resource="cpu"}) by (node)</code></td><td class="output">Ratio &gt;1 means the node's pods could collectively demand more CPU than it physically has.</td><td class="when">Root-cause query for "everything gets slow under load" — the node is oversubscribed on paper even if steady-state usage looks fine.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Idle nodes (candidates to scale down)</td><td class="query"><code>100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[1h])) * 100) &lt; 5</code></td><td class="output">Nodes averaging under 5% CPU utilization over the last hour.</td><td class="when">Direct cost-reduction signal — candidates for cluster-autoscaler scale-down or a smaller instance type.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<div class="part">
+  <div class="part-head">
+    <div class="eyebrow">Part Six</div>
+    <h2 class="part-title">MLOps &amp; AIOps</h2>
+    <p>Model-serving and GPU queries for the MLflow/KServe pieces already in this cluster (marked template where the exact metric name depends on your model server's instrumentation — verify against <code>/metrics</code> on the actual pod before relying on it), plus the forecasting-style PromQL functions that AIOps tooling is built on.</p>
+  </div>
+</div>
+
+<section class="cat" id="cat-mlops">
+  <div class="cat-head"><h2>MLOps: Model Serving &amp; GPU</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>KServe controller health</td><td class="query"><code>up{job="kube-state-metrics"} and on(pod) kube_pod_info{namespace="kserve"}</code></td><td class="output">Whether the KServe controller pod itself is up (via the existing kube-state-metrics scrape).</td><td class="when">Confirms the control plane for model deployments is alive — start here before debugging an individual InferenceService.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>Model inference latency</td><td class="query"><code>histogram_quantile(0.95, sum(rate(model_inference_duration_seconds_bucket[5m])) by (le,model))</code></td><td class="output">p95 inference latency per model, <em>if</em> the serving runtime exports this histogram.</td><td class="when">SLO tracking for a model endpoint — confirm the exact metric name in your runtime's own <code>/metrics</code> first (KServe's predictor, Triton, and TorchServe all name this differently).</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>GPU utilization</td><td class="query"><code>DCGM_FI_DEV_GPU_UTIL</code></td><td class="output">Percentage GPU utilization per device, from NVIDIA's DCGM exporter.</td><td class="when">Requires the NVIDIA DCGM exporter DaemonSet on GPU nodes — not installed in this CPU-only lab.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="info"><td class="scenario"><span class="sev-dot sev-info" title="Info"></span>GPU memory used</td><td class="query"><code>DCGM_FI_DEV_FB_USED / DCGM_FI_DEV_FB_TOTAL</code></td><td class="output">Fraction of GPU framebuffer memory in use.</td><td class="when">Same DCGM dependency as above — the OOM-equivalent check for GPU workloads.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>MLflow tracking server up</td><td class="query"><code>up{job="mlflow"} == 0</code></td><td class="output">Whether the MLflow tracking server is reachable — requires adding an <code>mlflow</code> scrape job (MLflow has no built-in <code>/metrics</code> endpoint).</td><td class="when">Experiment-tracking outage detection.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-aiops">
+  <div class="cat-head"><h2>AIOps: Forecasting &amp; Anomaly Patterns</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th class="sortable" data-sort="severity">Scenario<span class="arrow">▲▼</span></th><th>Query</th><th>Output</th><th>When to use it</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Linear forecast (generic)</td><td class="query"><code>predict_linear(node_filesystem_avail_bytes[1h], 4*3600) &lt; 0</code></td><td class="output">True if the current trend crosses zero within the given horizon.</td><td class="when">Works for any steadily-trending metric, not just disk — request queues, memory leaks, connection counts.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Deviation from same-time-yesterday</td><td class="query"><code>abs(rate(http_requests_total[5m]) - rate(http_requests_total[5m] offset 1d)) &gt; 3 * stddev_over_time(rate(http_requests_total[5m])[1d:5m])</code></td><td class="output">True when current traffic deviates more than 3 standard deviations from the same time yesterday.</td><td class="when">Baseline-relative anomaly detection without hand-tuning a static threshold — the core primitive behind most AIOps "smart alert" products.</td><td class="type"><span class="pill pill-promql">PromQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+      <tr data-sev="critical"><td class="scenario"><span class="sev-dot sev-critical" title="Critical"></span>Metric went missing entirely</td><td class="query"><code>absent(up{job="kube-apiserver"})</code></td><td class="output">True only when the target has vanished from Prometheus altogether.</td><td class="when">Catches total instrumentation loss — a target that's down doesn't trigger this (it becomes <code>up == 0</code>, still present); this is for when scraping stops entirely.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+      <tr data-sev="warning"><td class="scenario"><span class="sev-dot sev-warning" title="Warning"></span>Flapping detector</td><td class="query"><code>changes(kube_pod_container_status_ready{namespace="default"}[10m]) &gt; 4</code></td><td class="output">Containers whose ready state changed more than 4 times in 10 minutes.</td><td class="when">Generic flapping detection — same principle the CrashLoopBackOff alert uses, applicable to any boolean-ish series.</td><td class="type"><span class="pill pill-promql">PromQL</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<div class="part">
+  <div class="part-head">
+    <div class="eyebrow">Part Seven</div>
+    <h2 class="part-title">Function Cheat Sheets</h2>
+    <p>Not "run this exact query" rows — these are the building blocks. Understanding these six PromQL functions and five LogQL patterns covers the vast majority of what you'll ever need to write from scratch.</p>
+  </div>
+</div>
+
+<section class="cat" id="cat-promqlfn">
+  <div class="cat-head"><h2>PromQL Functions</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Function</th><th>Example</th><th>What it does</th><th>Gotcha</th></tr></thead>
+    <tbody>
+      <tr><td class="scenario"><code>rate()</code> vs <code>irate()</code></td><td class="query"><code>rate(x[5m])</code> vs <code>irate(x[5m])</code></td><td class="output">Both compute per-second rate of a counter; <code>rate</code> averages across the whole window, <code>irate</code> uses only the last two data points.</td><td class="when">Use <code>rate</code> for alerting/dashboards (smoother); <code>irate</code> only for fast-moving graphs where you want to see spikes instantly.</td></tr>
+      <tr><td class="scenario"><code>increase()</code></td><td class="query"><code>increase(x[15m])</code></td><td class="output">Total absolute increase of a counter over the window (rate × window size).</td><td class="when">Resets to zero on a counter restart — a pod restart can look like a dip, not a real drop.</td></tr>
+      <tr><td class="scenario"><code>histogram_quantile()</code></td><td class="query"><code>histogram_quantile(0.95, sum(rate(x_bucket[5m])) by (le))</code></td><td class="output">Estimated percentile from a <code>_bucket</code> histogram series.</td><td class="when">Requires the metric to actually be a histogram (has a <code>le</code> label) — doesn't work on a plain gauge/counter.</td></tr>
+      <tr><td class="scenario"><code>topk()</code> / <code>bottomk()</code></td><td class="query"><code>topk(5, sum(x) by (pod))</code></td><td class="output">The 5 highest (or lowest) series by value.</td><td class="when">Great for "what's the worst offender" panels — remember it re-evaluates per step, so the top-5 set can shift over a graph's time range.</td></tr>
+      <tr><td class="scenario"><code>label_replace()</code></td><td class="query"><code>label_replace(x, "short_pod", "$1", "pod", "(.*)-[a-z0-9]+")</code></td><td class="output">Adds/rewrites a label using a regex capture.</td><td class="when">Joining two metrics whose label values don't quite match (e.g. stripping a hash suffix) before an <code>on()</code> match.</td></tr>
+      <tr><td class="scenario">Vector matching: <code>on()</code> / <code>group_left()</code></td><td class="query"><code>a * on(pod,namespace) group_left() b</code></td><td class="output">Joins two metrics on shared labels; <code>group_left</code> allows a many-to-one match, carrying extra labels from the right side.</td><td class="when">Every "which pod belongs to which deployment" query on this page uses this — get the match labels wrong and you silently get zero results, not an error.</td></tr>
+      <tr><td class="scenario"><code>absent()</code></td><td class="query"><code>absent(up{job="x"})</code></td><td class="output">Returns <code>1</code> only if the series doesn't exist at all.</td><td class="when">The only way to alert on "this should exist and doesn't" — a target that's merely down still has a series (<code>up == 0</code>).</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="cat" id="cat-logqlfn">
+  <div class="cat-head"><h2>LogQL Patterns</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Pattern</th><th>Example</th><th>What it does</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr><td class="scenario">Line filter</td><td class="query"><code>{job="kubernetes-containers"} |= "ERROR"</code></td><td class="output">Raw substring match — fastest possible LogQL filter, no parsing.</td><td class="type"><span class="pill pill-logql">LogQL</span></td></tr>
+      <tr><td class="scenario">Regex filter</td><td class="query"><code>{job="kubernetes-containers"} |~ "(?i)timeout|refused"</code></td><td class="output">Case-insensitive regex match across multiple patterns at once.</td><td class="type"><span class="pill pill-logql">LogQL</span></td></tr>
+      <tr><td class="scenario">JSON parsing + field filter</td><td class="query"><code>{job="k8s-events"} | json | reason="FailedScheduling"</code></td><td class="output">Parses the line as JSON, then filters on an extracted field — the pattern behind every event-based alert on this page.</td><td class="type"><span class="pill pill-logql">LogQL</span></td></tr>
+      <tr><td class="scenario">Turn logs into a metric</td><td class="query"><code>sum(rate({job="kubernetes-containers"} |= "ERROR" [5m])) by (namespace)</code></td><td class="output">Error-line rate per namespace, as a genuine time series — can be alerted on exactly like a Prometheus metric.</td><td class="type"><span class="pill pill-logql">LogQL</span></td></tr>
+      <tr><td class="scenario">Unwrap a numeric field</td><td class="query"><code>{job="app"} | json | unwrap duration_ms | quantile_over_time(0.95, [5m])</code></td><td class="output">p95 of a number embedded in the log line itself — useful when the app logs latency but doesn't expose it as a Prometheus histogram.</td><td class="type"><span class="pill pill-logql">LogQL</span> <span class="pill pill-tmpl">TEMPLATE</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+</main>
+
+<p class="empty-state" id="empty">No queries match that filter.</p>
+
+
+<footer>
+  Rows without a <span class="pill pill-tmpl" style="vertical-align:1px">TEMPLATE</span> badge are tested live against the devops-lab Prometheus (<code>PBFA97CFB590B2093</code>) and Loki (<code>P8E80F9AEF21F6940</code>) datasources today. <span class="pill pill-tmpl" style="vertical-align:1px">TEMPLATE</span> rows are correct, standard patterns for exporters and platforms not currently running in this cluster — copy-paste ready the moment you deploy the matching exporter. <span class="pill pill-na" style="vertical-align:1px">Not applicable here</span> rows are kept for completeness against the source reference sheet but genuinely cannot return data on this platform (kubeadm, not EKS/AKS).
+</footer>
+
+<script>
+(function () {
+  const search = document.getElementById('search');
+  const typeChips = Array.from(document.querySelectorAll('.chip[data-filter]'));
+  const statusChips = Array.from(document.querySelectorAll('.chip[data-status]'));
+  const sevChips = Array.from(document.querySelectorAll('.chip[data-sev]'));
+  const sections = Array.from(document.querySelectorAll('section.cat'));
+  const allRows = Array.from(document.querySelectorAll('tbody tr'));
+  const empty = document.getElementById('empty');
+  const counts = document.getElementById('counts');
+  let typeFilter = 'all';
+  let statusFilter = 'all';
+  let sevFilter = 'all';
+
+  const liveCount = allRows.filter(function (r) { return !r.querySelector('.pill-tmpl'); }).length;
+  const critCount = allRows.filter(function (r) { return r.dataset.sev === 'critical'; }).length;
+  counts.innerHTML = '<span><b>' + allRows.length + '</b> queries indexed</span><span><b>' + liveCount + '</b> live in this cluster</span><span><b>' + critCount + '</b> critical signals</span>';
+
+  function typeOf(row) {
+    if (row.querySelector('.pill-promql')) return 'promql';
+    if (row.querySelector('.pill-logql')) return 'logql';
+    return 'na';
+  }
+  function isTemplate(row) {
+    return !!row.querySelector('.pill-tmpl');
+  }
+  const SEV_RANK = { critical: 0, warning: 1, info: 2, undefined: 3 };
+
+  function apply() {
+    const term = search.value.trim().toLowerCase();
+    let visibleTotal = 0;
+    sections.forEach(function (sec) {
+      let visibleInSection = 0;
+      sec.querySelectorAll('tbody tr').forEach(function (row) {
+        const matchesType = typeFilter === 'all' || typeOf(row) === typeFilter;
+        const tmpl = isTemplate(row);
+        const matchesStatus = statusFilter === 'all' || (statusFilter === 'tmpl' && tmpl) || (statusFilter === 'live' && !tmpl);
+        const matchesSev = sevFilter === 'all' || row.dataset.sev === sevFilter;
+        const matchesTerm = !term || row.textContent.toLowerCase().indexOf(term) !== -1;
+        const show = matchesType && matchesStatus && matchesSev && matchesTerm;
+        row.classList.toggle('hide', !show);
+        if (show) { visibleInSection++; visibleTotal++; }
+      });
+      sec.style.display = visibleInSection === 0 ? 'none' : '';
+    });
+    empty.style.display = visibleTotal === 0 ? 'block' : 'none';
+  }
+
+  search.addEventListener('input', apply);
+  typeChips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      typeChips.forEach(function (c) { c.classList.remove('active'); });
+      chip.classList.add('active');
+      typeFilter = chip.dataset.filter;
+      apply();
+    });
+  });
+  statusChips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      statusChips.forEach(function (c) { c.classList.remove('active'); });
+      chip.classList.add('active');
+      statusFilter = chip.dataset.status;
+      apply();
+    });
+  });
+  sevChips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      sevChips.forEach(function (c) { c.classList.remove('active'); });
+      chip.classList.add('active');
+      sevFilter = chip.dataset.sev;
+      apply();
+    });
+  });
+
+  // click-to-sort by severity, ascending/descending, per table
+  document.querySelectorAll('th.sortable').forEach(function (th) {
+    th.addEventListener('click', function () {
+      const table = th.closest('table');
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      const asc = !th.classList.contains('sorted-asc');
+      table.querySelectorAll('th.sortable').forEach(function (h) { h.classList.remove('sorted-asc', 'sorted-desc'); });
+      th.classList.add(asc ? 'sorted-asc' : 'sorted-desc');
+      rows.sort(function (a, b) {
+        const ra = SEV_RANK[a.dataset.sev] !== undefined ? SEV_RANK[a.dataset.sev] : 3;
+        const rb = SEV_RANK[b.dataset.sev] !== undefined ? SEV_RANK[b.dataset.sev] : 3;
+        return asc ? ra - rb : rb - ra;
+      });
+      rows.forEach(function (r) { tbody.appendChild(r); });
+    });
+  });
+
+  // build quick-jump nav from section headings
+  const nav = document.querySelector('main > nav');
+  sections.forEach(function (sec) {
+    const title = sec.querySelector('h2').textContent;
+    const a = document.createElement('button');
+    a.className = 'chip';
+    a.textContent = title;
+    a.addEventListener('click', function () {
+      sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    nav.appendChild(a);
+  });
+})();
+</script>
+
+</body></html>
