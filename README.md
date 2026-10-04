@@ -79,3 +79,17 @@ dependencies, dark/light theme aware.
 ## License
 
 MIT — see [LICENSE](LICENSE). Use it, fork it, adapt it, ship it.
+
+---
+
+### Who maintains this
+
+[RRR Solution Providers](https://www.rrrsolutionproviders.ca?utm_source=github&utm_medium=readme&utm_campaign=repos&utm_content=grafana-observability-toolkit) — cloud, Kubernetes and platform
+engineering, Toronto, Canada.
+
+We publish our prices, which is unusual in consulting: [www.rrrsolutionproviders.ca/pricing](https://www.rrrsolutionproviders.ca/pricing?utm_source=github&utm_medium=readme&utm_campaign=repos&utm_content=grafana-observability-toolkit).
+If you want something like this built properly in your own estate, the smallest
+way to start is a [five-day fixed-price audit](https://www.rrrsolutionproviders.ca/audit?utm_source=github&utm_medium=readme&utm_campaign=repos&utm_content=grafana-observability-toolkit) — read-only access, and you
+keep the written report whether or not you continue with us.
+
+Issues and corrections are welcome.
